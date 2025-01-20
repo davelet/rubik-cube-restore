@@ -1,18 +1,5 @@
-const { invoke } = window.__TAURI__.core;
+import { createApp } from 'vue'
+import './styles.css'
+import App from './App.vue'
 
-let greetInputEl;
-let greetMsgEl;
-
-async function greet() {
-  greetMsgEl.textContent = await invoke("greet", { name: greetInputEl.value });
-  invoke('my_custom_command');
-}
-
-window.addEventListener("DOMContentLoaded", () => {
-  greetInputEl = document.querySelector("#greet-input");
-  greetMsgEl = document.querySelector("#greet-msg");
-  document.querySelector("#greet-form").addEventListener("submit", (e) => {
-    e.preventDefault();
-    greet();
-  });
-});
+createApp(App).mount('#app')
