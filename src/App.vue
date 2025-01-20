@@ -1,9 +1,10 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
+import DraggableCube from './components/DraggableCube.vue';
+
 </script>
 
 <template>
-  <HelloWorld msg="Hello Tauri"/>
+  <DraggableCube />
 </template>
 
 <style scoped>
