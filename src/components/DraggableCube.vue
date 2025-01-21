@@ -34,12 +34,21 @@ export default {
 
       // 添加立方体
       const geometry = new THREE.BoxGeometry(3, 3, 3);
-      const material = new THREE.MeshStandardMaterial({ color: 0x007bff });
-      const cube = new THREE.Mesh(geometry, material);
+      //   const material = new THREE.MeshStandardMaterial({ color: 0x007bff });
+      // 创建材质数组，每个面一个材质
+      const materials = [
+        new THREE.MeshBasicMaterial({ color: 0xffffff }), // 白色
+        new THREE.MeshBasicMaterial({ color: 0xffff00 }), // 黄色
+        new THREE.MeshBasicMaterial({ color: 0xff0000 }), // 红色
+        new THREE.MeshBasicMaterial({ color: 0xffa500 }), // 橙色
+        new THREE.MeshBasicMaterial({ color: 0x00ff00 }), // 绿色
+        new THREE.MeshBasicMaterial({ color: 0x0000ff })  // 蓝色
+      ];
+      const cube = new THREE.Mesh(geometry, materials);
 
       // 设置立方体的旋转角度，以便从一个角落看到它
-      cube.rotation.x = Math.PI / 6; // 45度沿x轴旋转
-      cube.rotation.y = Math.PI / 8; // 45度沿y轴旋转
+      cube.rotation.x = Math.PI / 6; // 30度沿x轴旋转
+      cube.rotation.y = Math.PI / 4; // 45度沿y轴旋转
       scene.add(cube);
 
       // 添加光源
