@@ -5,7 +5,6 @@ import { RouterLink, RouterView } from 'vue-router';
 <template>
   <div class="app-container">
     <nav class="nav-buttons">
-      <RouterLink to="/hello" class="nav-button">Hello World</RouterLink>
       <RouterLink to="/cube" class="nav-button">Draggable Cube</RouterLink>
       <RouterLink to="/rubiks" class="nav-button">Rubiks Cube</RouterLink>
     </nav>
