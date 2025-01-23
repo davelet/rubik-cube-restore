@@ -15,7 +15,10 @@
     "@vitejs/plugin-vue": "^5.2.1",
     "three": "^0.172.0",
     "vue": "^3.5.13",
-    "vue-router": "^4.5.0"
+    "vue-router": "^4.5.0",
+    "@tweakpane/core": "^2.0.5",
+    "animejs": "^3.2.2",
+    "tweakpane": "^4.0.5"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2",

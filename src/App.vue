@@ -1,5 +1,6 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router';
+import RubiksCube from '../../rubiks-cube/src/components/RubiksCube.vue';
 </script>
 
 <template>
@@ -7,6 +8,7 @@ import { RouterLink, RouterView } from 'vue-router';
     <nav class="nav-buttons">
       <RouterLink to="/hello" class="nav-button">Hello World</RouterLink>
       <RouterLink to="/cube" class="nav-button">Draggable Cube</RouterLink>
+      <RouterLink to="/rubiks" class="nav-button">Rubiks Cube</RouterLink>
     </nav>
     <RouterView />
   </div>
