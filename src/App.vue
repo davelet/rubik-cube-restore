@@ -1,6 +1,5 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router';
-import RubiksCube from '../../rubiks-cube/src/components/RubiksCube.vue';
 </script>
 
 <template>
