@@ -1,6 +1,6 @@
-# Tauri + Vanilla
+# Tauri + Vue
 
-This template should help get you started developing with Tauri in vanilla HTML, CSS and Javascript.
+This template should help get you started developing with Tauri and Vue in your applications.
 
 ## Recommended IDE Setup
 
