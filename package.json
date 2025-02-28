@@ -10,12 +10,13 @@
     "tauri": "tauri dev"
   },
   "dependencies": {
+    "@react-three/drei": "^10.0.3",
     "@tauri-apps/api": "^2",
     "@tauri-apps/plugin-opener": "^2",
     "@tweakpane/core": "^2.0.5",
     "animejs": "^3.2.2",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
     "react-router-dom": "^6.22.3",
     "three": "^0.172.0",
     "tweakpane": "^4.0.5"
@@ -23,8 +24,8 @@
   "devDependencies": {
     "@tauri-apps/cli": "^2",
     "@types/node": "^22.13.5",
-    "@types/react": "^18.2.66",
-    "@types/react-dom": "^18.2.22",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
     "@types/three": "^0.172.0",
     "@vitejs/plugin-react": "^4.3.4",
     "typescript": "~5.6.2",
