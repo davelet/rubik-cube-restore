@@ -6,6 +6,16 @@ This template should help get you started developing with Tauri and Vue in your 
 
 - [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
 
+## Clone the Repository
+
+To clone the repository, run the following command:
+
+```bash
+git clone git@github.com:davelet/rubik-cube-restore.git
+cd rubik-cube-restore
+git submodule update --init --recursive
+```
+
 # 运行
 
 ## 1. dev模式
