@@ -25,6 +25,7 @@
 import { invoke } from '@tauri-apps/api/core';
 
 export default {
+  name: 'RubiksCubeOnTauri',
   data() {
     return {
       cubeSize: 90,

@@ -6,7 +6,7 @@ import { RouterLink, RouterView } from 'vue-router';
   <div class="app-container">
     <nav class="nav-buttons">
       <RouterLink to="/cube" class="nav-button" active-class="active">魔方观察</RouterLink>
-      <RouterLink to="/rubiks" class="nav-button" active-class="active">外链魔方</RouterLink>
+      <RouterLink to="/github-rubiks" class="nav-button" active-class="active">外链魔方</RouterLink>
     </nav>
     <RouterView />
   </div>
