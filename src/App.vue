@@ -5,8 +5,8 @@ import { RouterLink, RouterView } from 'vue-router';
 <template>
   <div class="app-container">
     <nav class="nav-buttons">
-      <RouterLink to="/cube" class="nav-button">Draggable Cube</RouterLink>
-      <RouterLink to="/rubiks" class="nav-button">Rubiks Cube</RouterLink>
+      <RouterLink to="/cube" class="nav-button" active-class="active">魔方观察</RouterLink>
+      <RouterLink to="/rubiks" class="nav-button" active-class="active">外链魔方</RouterLink>
     </nav>
     <RouterView />
   </div>
@@ -30,13 +30,21 @@ import { RouterLink, RouterView } from 'vue-router';
 .nav-button {
   padding: 0.5rem 1rem;
   border-radius: 4px;
-  background-color: #646cff;
+  background-color: #999;
   color: white;
   text-decoration: none;
   transition: background-color 0.3s;
 }
 
 .nav-button:hover {
+  background-color: #777;
+}
+
+.nav-button.active {
+  background-color: #646cff;
+}
+
+.nav-button.active:hover {
   background-color: #535bf2;
 }
 

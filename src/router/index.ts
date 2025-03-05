@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
-import DraggableCube from '../components/DraggableCube.vue'
-import RubiksCube from '../../rubiks-cube/src/components/RubiksCube.vue'
 import RubiksCube2D from '../components/RubiksCube2D.vue'
+import GithubRubiksPage from '../components/GithubRubiksPage.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -16,7 +15,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/rubiks',
     name: 'rubiks',
-    component: RubiksCube
+    component: GithubRubiksPage
   }
 ]
 
