@@ -1,5 +1,11 @@
 <template>
   <div class="rubiks-cube-2d">
+    <!-- 3D Coordinate System -->
+    <div class="coordinate-system">
+      <div class="axis x-axis"></div>
+      <div class="axis y-axis"></div>
+      <div class="axis z-axis"></div>
+    </div>
     <div class="cube-state-display">
       <div v-for="face in cubeStateDisplay" :key="face.name" class="face-state">
         <h3>{{ face.name }}</h3>
@@ -13,9 +19,9 @@
       </div>
     </div>
     <div class="cube" v-for="(cube, index) in cubes" :key="index" :style="cubeStyle(cube)">
-      <div class="face" v-for="face in faces" :key="face.rotate"
-        :style="faceStyle(face.rotate, translateZ(cube.size))">
-        <div v-for="(block, blockIndex) in 9" :key="blockIndex" class="block" :style="blockStyle(cube[face.colorProp], blockIndex)"></div>
+      <div class="face" v-for="face in faces" :key="face.rotate" :style="faceStyle(face.rotate, translateZ(cube.size))">
+        <div v-for="(block, blockIndex) in 9" :key="blockIndex" class="block"
+          :style="blockStyle(cube[face.colorProp], blockIndex)"></div>
       </div>
     </div>
   </div>
@@ -63,7 +69,7 @@ export default {
     },
     cubes() {
       if (!this.cubeState) return [];
-      
+
       const colorMap = {
         0: 'yellow',  // UP
         1: 'gainsboro',   // DOWN
@@ -72,12 +78,12 @@ export default {
         4: 'orange',  // LEFT
         5: 'red'      // RIGHT
       };
-      
+
       return [
         {
           x: 0,
           y: this.spacing * 0.1,
-          size: this.cubeSize * 0.9,
+          size: this.cubeSize * 0.8,
           topColor: colorMap[this.cubeState[0][1][1]],
           bottomColor: colorMap[this.cubeState[1][1][1]],
           frontColor: colorMap[this.cubeState[3][1][1]],
@@ -86,9 +92,9 @@ export default {
           rightColor: colorMap[this.cubeState[5][1][1]],
         },
         {
-          x: this.spacing * 1.1,
-          y: 0,
-          size: this.cubeSize * 0.8,
+          x: this.spacing,
+          y: this.spacing * 0.1,
+          size: this.cubeSize * 0.85,
           topColor: colorMap[this.cubeState[0][1][1]],
           bottomColor: colorMap[this.cubeState[1][1][1]],
           frontColor: colorMap[this.cubeState[2][1][1]],
@@ -99,7 +105,7 @@ export default {
         {
           x: this.spacing / 2,
           y: this.spacing / 2,
-          size: this.cubeSize * 1.1,
+          size: this.cubeSize,
           topColor: colorMap[this.cubeState[0][1][1]],
           bottomColor: colorMap[this.cubeState[1][1][1]],
           frontColor: colorMap[this.cubeState[2][1][1]],
@@ -110,7 +116,7 @@ export default {
         {
           x: this.spacing * 0.53,
           y: this.spacing * 0.99,
-          size: this.cubeSize * 0.85,
+          size: this.cubeSize * 0.75,
           topColor: colorMap[this.cubeState[1][1][1]],
           bottomColor: colorMap[this.cubeState[0][1][1]],
           frontColor: colorMap[this.cubeState[2][1][1]],
@@ -126,7 +132,7 @@ export default {
       return {
         position: 'absolute',
         transformStyle: 'preserve-3d',
-        transform: `translate3d(${cube.x + 50}px, ${cube.y + 50}px, 0px) rotateX(-45deg) rotateY(45deg)`,
+        transform: `translate3d(${cube.x + cube.size}px, ${cube.y + 0}px, 0px) rotateX(-45deg) rotateY(45deg)`,
         width: `${cube.size}px`,
         height: `${cube.size}px`,
       }
@@ -163,12 +169,60 @@ export default {
 <style scoped>
 .rubiks-cube-2d {
   position: relative;
-  width: 600px;
-  height: 600px;
-  margin: 5px auto;
+  width: 100%;
+  height: 100%;
+  margin: 0;
   perspective: 1000px;
-  perspective-origin: 250px 250px;
-  background-color: black;
+  perspective-origin: 50% 50%;
+  background-color: rgb(184, 163, 197);
+  overflow: hidden;
+}
+
+/* Coordinate System Styles */
+.coordinate-system {
+  position: absolute;
+  top: 30%;
+  left: 10%;
+  transform-style: preserve-3d;
+  transform: translate(-50%, -50%) translateY(min(20vh, 200px)) rotateX(-45deg) rotateY(45deg);
+  opacity: 1;
+  z-index: 10;
+  scale: min(1.5, 15vh / 100);
+  background-color: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(0, 0, 0, 0.5);
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.axis {
+  position: absolute;
+  transform-origin: center center;
+  transform-style: preserve-3d;
+  /* Important for 3D transformations */
+}
+
+.x-axis {
+  width: 200px;
+  /* Adjust length as needed */
+  height: 2px;
+  background-color: red;
+  transform: translateX(-50%);
+}
+
+.y-axis {
+  width: 2px;
+  height: 200px;
+  /* Adjust length as needed */
+  background-color: green;
+  transform: translateY(-50%);
+}
+
+.z-axis {
+  width: 2px;
+  height: 200px;
+  /* Adjust length as needed */
+  background-color: yellow;
+  transform: rotateX(90deg) translateZ(100px);
 }
 
 .cube {
@@ -189,6 +243,7 @@ export default {
   background-color: #fff;
   border: 1px solid black;
 }
+
 .cube-state-display {
   display: none;
   flex-wrap: wrap;
