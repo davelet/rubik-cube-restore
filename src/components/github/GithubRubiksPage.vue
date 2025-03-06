@@ -12,7 +12,7 @@
 </template>
 
 <script setup>
-import RubiksCube from '../../rubiks-cube/src/components/RubiksCube.vue';
+import RubiksCube from '../../../rubiks-cube/src/components/RubiksCube.vue';
 
 defineOptions({
   name: 'GithubRubiksPage'

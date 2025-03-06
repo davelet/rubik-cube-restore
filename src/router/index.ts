@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import RubiksCubeOnTauri from '../components/RubiksCubeOnTauri.vue'
-import GithubRubiksPage from '../components/GithubRubiksPage.vue'
+import GithubRubiksPage from '../components/github/GithubRubiksPage.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {

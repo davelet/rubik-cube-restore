@@ -18,31 +18,24 @@
         </div>
       </div>
     </div>
-    <div class="cube" v-for="(cube, index) in cubes" :key="index" :style="cubeStyle(cube)">
-      <div class="face" v-for="face in faces" :key="face.rotate" :style="faceStyle(face.rotate, translateZ(cube.size))">
-        <div v-for="(block, blockIndex) in 9" :key="blockIndex" class="block"
-          :style="blockStyle(cube[face.colorProp], blockIndex)"></div>
-      </div>
+    <div v-for="(cube, index) in cubes" :key="index" :style="cubeContainerStyle(cube)">
+      <RubiksCubeBase :size="cube.size" :colors="getCubeColors(cube)" />
     </div>
   </div>
 </template>
 
 <script>
 import { invoke } from '@tauri-apps/api/core';
+import RubiksCubeBase from './RubiksCubeBase.vue';
 
 export default {
   name: 'RubiksCubeOnTauri',
+  components: {
+    RubiksCubeBase
+  },
   data() {
     return {
       cubeSize: 90,
-      faces: [
-        { colorProp: 'topColor', rotate: 'rotateX(90deg)' },
-        { colorProp: 'leftColor', rotate: 'rotateY(-90deg)' },
-        { colorProp: 'frontColor', rotate: 'rotateY(0deg)' },
-        { colorProp: 'rightColor', rotate: 'rotateY(90deg)' },
-        { colorProp: 'backColor', rotate: 'rotateY(180deg)' },
-        { colorProp: 'bottomColor', rotate: 'rotateX(-90deg)' },
-      ],
       cubeState: null,
     };
   },
@@ -84,6 +77,8 @@ export default {
           x: 0,
           y: this.spacing * 0.1,
           size: this.cubeSize * 0.8,
+          rotateX: -45,
+          rotateY: 45,
           topColor: colorMap[this.cubeState[0][1][1]],
           bottomColor: colorMap[this.cubeState[1][1][1]],
           frontColor: colorMap[this.cubeState[3][1][1]],
@@ -95,6 +90,8 @@ export default {
           x: this.spacing,
           y: this.spacing * 0.1,
           size: this.cubeSize * 0.85,
+          rotateX: -45,
+          rotateY: 45,
           topColor: colorMap[this.cubeState[0][1][1]],
           bottomColor: colorMap[this.cubeState[1][1][1]],
           frontColor: colorMap[this.cubeState[2][1][1]],
@@ -106,6 +103,8 @@ export default {
           x: this.spacing / 2,
           y: this.spacing / 2,
           size: this.cubeSize,
+          rotateX: -45,
+          rotateY: 45,
           topColor: colorMap[this.cubeState[0][1][1]],
           bottomColor: colorMap[this.cubeState[1][1][1]],
           frontColor: colorMap[this.cubeState[2][1][1]],
@@ -117,6 +116,8 @@ export default {
           x: this.spacing * 0.53,
           y: this.spacing * 0.99,
           size: this.cubeSize * 0.75,
+          rotateX: -45,
+          rotateY: 45,
           topColor: colorMap[this.cubeState[1][1][1]],
           bottomColor: colorMap[this.cubeState[0][1][1]],
           frontColor: colorMap[this.cubeState[2][1][1]],
@@ -128,39 +129,22 @@ export default {
     },
   },
   methods: {
-    cubeStyle(cube) {
+    cubeContainerStyle(cube) {
       return {
         position: 'absolute',
         transformStyle: 'preserve-3d',
-        transform: `translate3d(${cube.x + cube.size}px, ${cube.y + 0}px, 0px) rotateX(-45deg) rotateY(45deg)`,
-        width: `${cube.size}px`,
-        height: `${cube.size}px`,
+        transform: `translate3d(${cube.x + cube.size}px, ${cube.y + cube.size / 2}px, 0px) rotateX(${cube.rotateX}deg) rotateY(${cube.rotateY}deg)`,
       }
     },
-    faceStyle(rotate, translateZ) {
+    getCubeColors(cube) {
       return {
-        position: 'absolute',
-        width: '100%',
-        height: '100%',
-        transform: `${rotate} ${translateZ}`,
-        backfaceVisibility: 'hidden',
+        topColor: cube.topColor,
+        bottomColor: cube.bottomColor,
+        frontColor: cube.frontColor,
+        backColor: cube.backColor,
+        leftColor: cube.leftColor,
+        rightColor: cube.rightColor
       }
-    },
-    blockStyle(color, index) {
-      const x = index % 3;
-      const y = Math.floor(index / 3);
-      return {
-        position: 'absolute',
-        width: '33.33%',
-        height: '33.33%',
-        backgroundColor: color,
-        left: `${x * 33.33}%`,
-        top: `${y * 33.33}%`,
-        border: '1px solid black',
-      }
-    },
-    translateZ(size) {
-      return `translateZ(${(size - 2) / 2 + 1}px)`
     },
   },
 }
