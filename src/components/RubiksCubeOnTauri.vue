@@ -18,33 +18,44 @@
         </div>
       </div>
     </div>
+    <RubiksCubeRotationControls
+      :faces="faces"
+      @rotate="handleRotation"
+    />
     <div v-for="(cube, index) in cubes" :key="index" :style="cubeContainerStyle(cube)">
       <RubiksCubeBase :size="cube.size" :colors="getCubeColors(cube)" />
     </div>
+    <ApiMessageDisplay ref="apiMessage" />
   </div>
 </template>
 
 <script>
 import { invoke } from '@tauri-apps/api/core';
 import RubiksCubeBase from './RubiksCubeBase.vue';
+import RubiksCubeRotationControls from './RubiksCubeRotationControls.vue';
+import ApiMessageDisplay from './ApiMessageDisplay.vue';
 
 export default {
   name: 'RubiksCubeOnTauri',
   components: {
-    RubiksCubeBase
+    RubiksCubeBase,
+    RubiksCubeRotationControls,
+    ApiMessageDisplay
   },
   data() {
     return {
       cubeSize: 90,
       cubeState: null,
+      faces: ['上面', '下面', '前面', '后面', '左面', '右面']
     };
   },
   async created() {
     try {
       this.cubeState = await invoke('init_get_get_state')
-      // 移除控制台日志
+      this.$refs.apiMessage?.addMessage('init_get_get_state', null, true)
     } catch (error) {
       console.error('Error fetching cube state:', error)
+      this.$refs.apiMessage?.addMessage('init_get_get_state', null, false, error)
     }
   },
   computed: {
@@ -146,6 +157,21 @@ export default {
         rightColor: cube.rightColor
       }
     },
+    async handleRotation(rotationParams) {
+      const params = {
+        state: this.cubeState,
+        face: rotationParams.face,
+        direction: rotationParams.direction === 0
+      };
+      try {
+        const result = await invoke('turn', params);
+        this.cubeState = result;
+        this.$refs.apiMessage?.addMessage('turn', params, true, null, result);
+      } catch (error) {
+        console.error('Error rotating cube:', error);
+        this.$refs.apiMessage?.addMessage('turn', params, false, error);
+      }
+    },
   },
 }
 </script>
@@ -165,7 +191,7 @@ export default {
 /* Coordinate System Styles */
 .coordinate-system {
   position: absolute;
-  top: 30%;
+  top: 15%;
   left: 10%;
   transform-style: preserve-3d;
   transform: translate(-50%, -50%) translateY(min(20vh, 200px)) rotateX(-45deg) rotateY(45deg);
@@ -263,5 +289,73 @@ export default {
   text-align: center;
   background-color: #eee;
   border-radius: 2px;
+}
+
+.rotation-controls {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.control-group {
+  margin-bottom: 15px;
+}
+
+.control-group:last-child {
+  margin-bottom: 0;
+}
+
+.control-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+select {
+  width: 100%;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.radio-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: normal;
+}
+
+input[type="radio"] {
+  margin: 0;
+}
+
+.rotate-button {
+  width: 100%;
+  padding: 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 10px;
+}
+
+.rotate-button:hover {
+  background-color: #45a049;
+}
+
+.rotate-button:active {
+  background-color: #3d8b40;
 }
 </style>

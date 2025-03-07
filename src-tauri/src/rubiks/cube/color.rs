@@ -23,3 +23,17 @@ impl fmt::Display for Color {
         }
     }
 }
+
+impl Color {
+    pub fn from_u8(value: u8) -> Color {
+        match value {
+            1 => Color::White,
+            0 => Color::Yellow,
+            5 => Color::Red,
+            4 => Color::Orange,
+            2 => Color::Blue,
+            3 => Color::Green,
+            _ => panic!("Invalid color value: {}", value),
+        }
+    }
+}
