@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import { invoke } from '@tauri-apps/api/core';
+import { useCubeStore } from '../stores/cube';
 import RubiksCubeBase from './RubiksCubeBase.vue';
 import RubiksCubeRotationControls from './RubiksCubeRotationControls.vue';
 import ApiMessageDisplay from './ApiMessageDisplay.vue';
@@ -42,20 +42,22 @@ export default {
     RubiksCubeRotationControls,
     ApiMessageDisplay
   },
+  setup() {
+    const store = useCubeStore();
+    const cubeSize = store.cubeSize;
+    return { store, cubeSize };
+  },
   data() {
     return {
-      cubeSize: 90,
-      cubeState: null,
       faces: ['上面', '下面', '前面', '后面', '左面', '右面']
     };
   },
   async created() {
-    try {
-      this.cubeState = await invoke('init_get_get_state')
-      this.$refs.apiMessage?.addMessage('init_get_get_state', null, true)
-    } catch (error) {
-      console.error('Error fetching cube state:', error)
-      this.$refs.apiMessage?.addMessage('init_get_get_state', null, false, error)
+    const result = await this.store.initCubeState()
+    if (result.success) {
+      this.$refs.apiMessage?.addMessage('init_get_get_state', null, true, null, result.result)
+    } else {
+      this.$refs.apiMessage?.addMessage('init_get_get_state', null, false, result.error)
     }
   },
   computed: {
@@ -64,79 +66,14 @@ export default {
     },
     // 添加用于显示魔方状态的计算属性
     cubeStateDisplay() {
-      if (!this.cubeState) return [];
       const faces = ['上面', '下面', '前面', '后面', '左面', '右面'];
-      return this.cubeState.map((face, index) => ({
+      return this.store.cubeState ? this.store.cubeState.map((face, index) => ({
         name: faces[index],
         colors: face
-      }));
+      })) : [];
     },
     cubes() {
-      if (!this.cubeState) return [];
-
-      const colorMap = {
-        0: 'yellow',  // UP
-        1: 'gainsboro',   // DOWN
-        2: 'blue',   // FRONT
-        3: 'green',    // BACK
-        4: 'orange',  // LEFT
-        5: 'red'      // RIGHT
-      };
-
-      return [
-        {
-          x: 0,
-          y: this.spacing * 0.1,
-          size: this.cubeSize * 0.8,
-          rotateX: -45,
-          rotateY: 45,
-          topColor: colorMap[this.cubeState[0][1][1]],
-          bottomColor: colorMap[this.cubeState[1][1][1]],
-          frontColor: colorMap[this.cubeState[3][1][1]],
-          backColor: colorMap[this.cubeState[2][1][1]],
-          leftColor: colorMap[this.cubeState[4][1][1]],
-          rightColor: colorMap[this.cubeState[5][1][1]],
-        },
-        {
-          x: this.spacing,
-          y: this.spacing * 0.1,
-          size: this.cubeSize * 0.85,
-          rotateX: -45,
-          rotateY: 45,
-          topColor: colorMap[this.cubeState[0][1][1]],
-          bottomColor: colorMap[this.cubeState[1][1][1]],
-          frontColor: colorMap[this.cubeState[2][1][1]],
-          backColor: colorMap[this.cubeState[3][1][1]],
-          leftColor: colorMap[this.cubeState[5][1][1]],
-          rightColor: colorMap[this.cubeState[4][1][1]],
-        },
-        {
-          x: this.spacing / 2,
-          y: this.spacing / 2,
-          size: this.cubeSize,
-          rotateX: -45,
-          rotateY: 45,
-          topColor: colorMap[this.cubeState[0][1][1]],
-          bottomColor: colorMap[this.cubeState[1][1][1]],
-          frontColor: colorMap[this.cubeState[2][1][1]],
-          backColor: colorMap[this.cubeState[3][1][1]],
-          leftColor: colorMap[this.cubeState[4][1][1]],
-          rightColor: colorMap[this.cubeState[5][1][1]],
-        },
-        {
-          x: this.spacing * 0.53,
-          y: this.spacing * 0.99,
-          size: this.cubeSize * 0.75,
-          rotateX: -45,
-          rotateY: 45,
-          topColor: colorMap[this.cubeState[1][1][1]],
-          bottomColor: colorMap[this.cubeState[0][1][1]],
-          frontColor: colorMap[this.cubeState[2][1][1]],
-          backColor: colorMap[this.cubeState[3][1][1]],
-          leftColor: colorMap[this.cubeState[4][1][1]],
-          rightColor: colorMap[this.cubeState[5][1][1]],
-        },
-      ];
+      return this.store.cubes;
     },
   },
   methods: {
@@ -158,18 +95,11 @@ export default {
       }
     },
     async handleRotation(rotationParams) {
-      const params = {
-        state: this.cubeState,
-        face: rotationParams.face,
-        direction: rotationParams.direction === 0
-      };
-      try {
-        const result = await invoke('turn', params);
-        this.cubeState = result;
-        this.$refs.apiMessage?.addMessage('turn', params, true, null, result);
-      } catch (error) {
-        console.error('Error rotating cube:', error);
-        this.$refs.apiMessage?.addMessage('turn', params, false, error);
+      const result = await this.store.handleRotation(rotationParams);
+      if (result.success) {
+        this.$refs.apiMessage?.addMessage('turn', rotationParams, true, null, result.result);
+      } else {
+        this.$refs.apiMessage?.addMessage('turn', rotationParams, false, result.error);
       }
     },
   },
