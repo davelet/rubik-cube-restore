@@ -1,14 +1,6 @@
 import { defineStore } from 'pinia'
 import { invoke } from '@tauri-apps/api/core'
 
-const colorMap = {
-  0: 'yellow',  // UP
-  1: 'gainsboro',   // DOWN
-  2: 'blue',   // FRONT
-  3: 'green',    // BACK
-  4: 'orange',  // LEFT
-  5: 'red'      // RIGHT
-}
 const cubeSize = 90;
 const spacing = cubeSize * 4;
 
@@ -21,6 +13,14 @@ export const useCubeStore = defineStore('cube', {
     cubes: (state) => {
       if (!state.cubeState) return []
 
+      const cubeFaces = {
+        top: 0,
+        bottom: 1,
+        front: 2,
+        back: 3,
+        left: 4,
+        right: 5,
+      }
       return [
         {
           x: 0,
@@ -28,12 +28,12 @@ export const useCubeStore = defineStore('cube', {
           size: cubeSize * 0.8,
           rotateX: -45,
           rotateY: 45,
-          topColor: colorMap[state.cubeState[0][1][1]],
-          bottomColor: colorMap[state.cubeState[1][1][1]],
-          frontColor: colorMap[state.cubeState[3][1][1]],
-          backColor: colorMap[state.cubeState[2][1][1]],
-          leftColor: colorMap[state.cubeState[4][1][1]],
-          rightColor: colorMap[state.cubeState[5][1][1]],
+          cubeState: state.cubeState,
+          coveredFaces: {
+            ...cubeFaces,
+            front: 3,
+            back: 2
+          }
         },
         {
           x: spacing,
@@ -41,12 +41,12 @@ export const useCubeStore = defineStore('cube', {
           size: cubeSize * 0.85,
           rotateX: -45,
           rotateY: 45,
-          topColor: colorMap[state.cubeState[0][1][1]],
-          bottomColor: colorMap[state.cubeState[1][1][1]],
-          frontColor: colorMap[state.cubeState[2][1][1]],
-          backColor: colorMap[state.cubeState[3][1][1]],
-          leftColor: colorMap[state.cubeState[5][1][1]],
-          rightColor: colorMap[state.cubeState[4][1][1]],
+          cubeState: state.cubeState,
+          coveredFaces: {
+            ...cubeFaces,
+            left: 5,
+            right: 4
+          }
         },
         {
           x: spacing / 2,
@@ -54,12 +54,8 @@ export const useCubeStore = defineStore('cube', {
           size: cubeSize,
           rotateX: -45,
           rotateY: 45,
-          topColor: colorMap[state.cubeState[0][1][1]],
-          bottomColor: colorMap[state.cubeState[1][1][1]],
-          frontColor: colorMap[state.cubeState[2][1][1]],
-          backColor: colorMap[state.cubeState[3][1][1]],
-          leftColor: colorMap[state.cubeState[4][1][1]],
-          rightColor: colorMap[state.cubeState[5][1][1]],
+          cubeState: state.cubeState,
+          coveredFaces: { ...cubeFaces, }
         },
         {
           x: spacing * 0.53,
@@ -67,14 +63,13 @@ export const useCubeStore = defineStore('cube', {
           size: cubeSize * 0.75,
           rotateX: -45,
           rotateY: 45,
-          topColor: colorMap[state.cubeState[1][1][1]],
-          bottomColor: colorMap[state.cubeState[0][1][1]],
-          frontColor: colorMap[state.cubeState[2][1][1]],
-          backColor: colorMap[state.cubeState[3][1][1]],
-          leftColor: colorMap[state.cubeState[4][1][1]],
-          rightColor: colorMap[state.cubeState[5][1][1]],
-        },
-
+          cubeState: state.cubeState,
+          coveredFaces: {
+            ...cubeFaces,
+            top: 1,
+            bottom: 0
+          }
+        }
       ]
     },
   },

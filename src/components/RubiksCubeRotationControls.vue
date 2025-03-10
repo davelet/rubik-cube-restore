@@ -30,16 +30,11 @@
 <script>
 export default {
   name: 'RotationControls',
-  props: {
-    faces: {
-      type: Array,
-      required: true
-    }
-  },
   data() {
     return {
       selectedFace: 0,
-      rotationDirection: 'clockwise'
+      rotationDirection: 'clockwise',
+      faces: ['上面', '下面', '前面', '后面', '左面', '右面']
     };
   },
   methods: {

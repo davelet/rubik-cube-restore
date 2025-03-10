@@ -6,12 +6,9 @@
       <div class="axis y-axis"></div>
       <div class="axis z-axis"></div>
     </div>
-    <RubiksCubeRotationControls
-      :faces="faces"
-      @rotate="handleRotation"
-    />
+    <RubiksCubeRotationControls @rotate="handleRotation" />
     <div v-for="(cube, index) in cubes" :key="index" :style="cubeContainerStyle(cube)">
-      <RubiksCubeBase :size="cube.size" :colors="getCubeColors(cube)" />
+      <RubiksCubeBase :size="cube.size" :cubeState="cube.cubeState" :converedFaces="cube.coveredFaces"/>
     </div>
     <ApiMessageDisplay ref="apiMessage" />
   </div>
@@ -35,11 +32,6 @@ export default {
     const cubeSize = store.cubeSize;
     return { store, cubeSize };
   },
-  data() {
-    return {
-      faces: ['上面', '下面', '前面', '后面', '左面', '右面']
-    };
-  },
   async created() {
     const result = await this.store.initCubeState()
     if (result.success) {
@@ -61,16 +53,16 @@ export default {
         transform: `translate3d(${cube.x + cube.size}px, ${cube.y + cube.size / 2}px, 0px) rotateX(${cube.rotateX}deg) rotateY(${cube.rotateY}deg)`,
       }
     },
-    getCubeColors(cube) {
-      return {
-        topColor: cube.topColor,
-        bottomColor: cube.bottomColor,
-        frontColor: cube.frontColor,
-        backColor: cube.backColor,
-        leftColor: cube.leftColor,
-        rightColor: cube.rightColor
-      }
-    },
+    // getCubeColors(cube) {
+    //   return {
+    //     topColor: cube.topColor,
+    //     bottomColor: cube.bottomColor,
+    //     frontColor: cube.frontColor,
+    //     backColor: cube.backColor,
+    //     leftColor: cube.leftColor,
+    //     rightColor: cube.rightColor
+    //   }
+    // },
     async handleRotation(rotationParams) {
       const result = await this.store.handleRotation(rotationParams);
       if (result.success) {

@@ -1,15 +1,24 @@
 <template>
   <div class="cube" :style="cubeStyle">
-    <RubiksCubeFace v-for="face in faces" :key="face.rotate"
+    <RubiksCubeFace v-for="(face, index) in faces" :key="face.name"
       :rotate="face.rotate"
       :translateZ="translateZ(size)"
-      :color="colors[face.colorProp]"
+      :color="getFaceColor(index)"
     />
   </div>
 </template>
 
 <script>
 import RubiksCubeFace from './RubiksCubeFace.vue'
+
+const cubeFaces = {
+  0: 'top',
+  1: 'bottom',
+  2: 'front',
+  3: 'back',
+  4: 'left',
+  5: 'right',
+}
 
 export default {
   name: 'RubiksCubeBase',
@@ -21,7 +30,11 @@ export default {
       type: Number,
       required: true
     },
-    colors: {
+    cubeState: {
+      type: Array,
+      required: true
+    },
+    converedFaces: {
       type: Object,
       required: true
     }
@@ -29,12 +42,12 @@ export default {
   data() {
     return {
       faces: [
-        { colorProp: 'topColor', rotate: 'rotateX(90deg)' },
-        { colorProp: 'leftColor', rotate: 'rotateY(-90deg)' },
-        { colorProp: 'frontColor', rotate: 'rotateY(0deg)' },
-        { colorProp: 'rightColor', rotate: 'rotateY(90deg)' },
-        { colorProp: 'backColor', rotate: 'rotateY(180deg)' },
-        { colorProp: 'bottomColor', rotate: 'rotateX(-90deg)' },
+        { faceIndex: 0, name: 'top', rotate: 'rotateX(90deg)' },
+        { faceIndex: 4, name: 'left', rotate: 'rotateY(-90deg)' },
+        { faceIndex: 2, name: 'front', rotate: 'rotateY(0deg)' },
+        { faceIndex: 5, name: 'right', rotate: 'rotateY(90deg)' },
+        { faceIndex: 3, name: 'back', rotate: 'rotateY(180deg)' },
+        { faceIndex: 1, name: 'bottom', rotate: 'rotateX(-90deg)' },
       ],
     };
   },
@@ -51,6 +64,12 @@ export default {
     translateZ(size) {
       return `translateZ(${(size - 2) / 2 + 1}px)`
     },
+    getFaceColor(faceIndex) {
+      let f = cubeFaces[faceIndex];
+      let n = this.converedFaces[f];
+
+      return this.cubeState[n];
+    }
   },
 }
 </script>
