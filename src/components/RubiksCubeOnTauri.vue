@@ -6,18 +6,6 @@
       <div class="axis y-axis"></div>
       <div class="axis z-axis"></div>
     </div>
-    <div class="cube-state-display">
-      <div v-for="face in cubeStateDisplay" :key="face.name" class="face-state">
-        <h3>{{ face.name }}</h3>
-        <div class="face-grid">
-          <div v-for="(row, rowIndex) in face.colors" :key="rowIndex" class="face-row">
-            <div v-for="(color, colIndex) in row" :key="colIndex" class="face-cell">
-              {{ color }}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
     <RubiksCubeRotationControls
       :faces="faces"
       @rotate="handleRotation"
@@ -61,17 +49,6 @@ export default {
     }
   },
   computed: {
-    spacing() {
-      return this.cubeSize * 4;
-    },
-    // 添加用于显示魔方状态的计算属性
-    cubeStateDisplay() {
-      const faces = ['上面', '下面', '前面', '后面', '左面', '右面'];
-      return this.store.cubeState ? this.store.cubeState.map((face, index) => ({
-        name: faces[index],
-        colors: face
-      })) : [];
-    },
     cubes() {
       return this.store.cubes;
     },
@@ -182,43 +159,6 @@ export default {
   height: 33.33%;
   background-color: #fff;
   border: 1px solid black;
-}
-
-.cube-state-display {
-  display: none;
-  flex-wrap: wrap;
-  gap: 20px;
-  margin-bottom: 20px;
-  padding: 10px;
-  background-color: #f5f5f5;
-  border-radius: 8px;
-}
-
-.face-state {
-  background-color: white;
-  padding: 10px;
-  border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.face-grid {
-  display: grid;
-  grid-template-rows: repeat(3, 1fr);
-  gap: 2px;
-  margin-top: 8px;
-}
-
-.face-row {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2px;
-}
-
-.face-cell {
-  padding: 8px;
-  text-align: center;
-  background-color: #eee;
-  border-radius: 2px;
 }
 
 .rotation-controls {
