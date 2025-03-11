@@ -6,11 +6,28 @@
       <div class="axis y-axis"></div>
       <div class="axis z-axis"></div>
     </div>
-    <RubiksCubeRotationControls @rotate="handleRotation" />
-    <div v-for="(cube, index) in cubes" :key="index" :style="cubeContainerStyle(cube)">
-      <RubiksCubeBase :size="cube.size" :cubeState="cube.cubeState" :converedFaces="cube.coveredFaces"/>
+    <RubiksCubeRotationControls 
+      @rotate="handleRotation" 
+      @reset="initCubeState" 
+      @debug-toggle="handleDebugToggle"
+      :showDebugMessages="showDebugMessages" 
+    />
+    <div 
+      v-for="(cube, index) in cubes" 
+      :key="index" 
+      :style="cubeContainerStyle(cube)"
+    >
+      <RubiksCubeBase 
+        :size="cube.size" 
+        :cubeState="cube.cubeState" 
+        :converedFaces="cube.coveredFaces" 
+      />
     </div>
-    <ApiMessageDisplay ref="apiMessage" />
+    <ApiMessageDisplay 
+      ref="apiMessage" 
+      v-if="showDebugMessages" 
+      class="message-display"
+    />
   </div>
 </template>
 
@@ -22,29 +39,31 @@ import ApiMessageDisplay from './ApiMessageDisplay.vue';
 
 export default {
   name: 'RubiksCubeOnTauri',
+
   components: {
     RubiksCubeBase,
     RubiksCubeRotationControls,
     ApiMessageDisplay
   },
+
   setup() {
     const store = useCubeStore();
     const cubeSize = store.cubeSize;
     return { store, cubeSize };
   },
-  async created() {
-    const result = await this.store.initCubeState()
-    if (result.success) {
-      this.$refs.apiMessage?.addMessage('init_get_get_state', null, true, null, result.result)
-    } else {
-      this.$refs.apiMessage?.addMessage('init_get_get_state', null, false, result.error)
-    }
+
+  data() {
+    return {
+      showDebugMessages: false,
+    };
   },
+
   computed: {
     cubes() {
       return this.store.cubes;
     },
   },
+
   methods: {
     cubeContainerStyle(cube) {
       return {
@@ -53,25 +72,59 @@ export default {
         transform: `translate3d(${cube.x + cube.size}px, ${cube.y + cube.size / 2}px, 0px) rotateX(${cube.rotateX}deg) rotateY(${cube.rotateY}deg)`,
       }
     },
-    // getCubeColors(cube) {
-    //   return {
-    //     topColor: cube.topColor,
-    //     bottomColor: cube.bottomColor,
-    //     frontColor: cube.frontColor,
-    //     backColor: cube.backColor,
-    //     leftColor: cube.leftColor,
-    //     rightColor: cube.rightColor
-    //   }
-    // },
-    async handleRotation(rotationParams) {
-      const result = await this.store.handleRotation(rotationParams);
-      if (result.success) {
-        this.$refs.apiMessage?.addMessage('turn', rotationParams, true, null, result.result);
+
+    handleDebugToggle(value) {
+      this.showDebugMessages = value;
+      this.handleDebugMessage(value);
+    },
+
+    handleDebugMessage(isEnabled) {
+      if (isEnabled) {
+        this.$refs.apiMessage?.addMessage(
+          'debug_mode',
+          null,
+          true,
+          null,
+          '调试模式已启用'
+        );
       } else {
-        this.$refs.apiMessage?.addMessage('turn', rotationParams, false, result.error);
+        this.$refs.apiMessage?.clearAllMessages();
       }
     },
+
+    async handleRotation(rotationParams) {
+      const result = await this.store.handleRotation(rotationParams);
+      this.handleApiResponse('turn', rotationParams, result);
+    },
+
+    async initCubeState() {
+      const result = await this.store.initCubeState();
+      this.handleApiResponse('init_result', null, result, '初始化完成');
+    },
+
+    handleApiResponse(type, params, result, successMessage) {
+      if (result.success) {
+        this.$refs.apiMessage?.addMessage(
+          type,
+          params,
+          true,
+          null,
+          successMessage || result.result
+        );
+      } else {
+        this.$refs.apiMessage?.addMessage(
+          type,
+          params,
+          false,
+          result.error || `${type}失败`
+        );
+      }
+    }
   },
+
+  async created() {
+    const result = await this.store.initCubeState();
+  }
 }
 </script>
 
@@ -138,86 +191,13 @@ export default {
   transform-style: preserve-3d;
 }
 
-.face {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  transform-style: preserve-3d;
-}
-
-.block {
-  position: absolute;
-  width: 33.33%;
-  height: 33.33%;
-  background-color: #fff;
-  border: 1px solid black;
-}
-
-.rotation-controls {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background-color: rgba(255, 255, 255, 0.9);
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.control-group {
-  margin-bottom: 15px;
-}
-
-.control-group:last-child {
-  margin-bottom: 0;
-}
-
-.control-group label {
-  display: block;
-  margin-bottom: 8px;
-  font-weight: bold;
-}
-
-select {
-  width: 100%;
-  padding: 8px;
-  border-radius: 4px;
-  border: 1px solid #ddd;
-}
-
-.radio-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.radio-group label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: normal;
-}
-
-input[type="radio"] {
-  margin: 0;
-}
-
-.rotate-button {
-  width: 100%;
-  padding: 10px;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 16px;
-  margin-top: 10px;
-}
-
-.rotate-button:hover {
-  background-color: #45a049;
-}
-
-.rotate-button:active {
-  background-color: #3d8b40;
+.message-display {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  width: 80%;
+  max-width: 600px;
 }
 </style>

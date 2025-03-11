@@ -1,10 +1,11 @@
 <template>
   <div class="api-message-container">
     <transition-group name="message-list" tag="div">
-      <div v-for="message in messages" :key="message.id" :class="['api-message', message.type]">
+      <div v-for="message in messages" :key="message.id" :class="['api-message', message.type]" @mouseenter="pauseTimer(message)" @mouseleave="resumeTimer(message)">
         <div class="message-header">
           <span class="api-name">{{ message.apiName }}</span>
           <span class="timestamp">{{ message.timestamp }}</span>
+          <span class="timer" v-if="message.timerVisible">{{ message.remainingTime }}秒</span>
           <button class="clear-button" @click="removeMessage(message.id)">×</button>
         </div>
         <div class="message-content">
@@ -34,6 +35,8 @@ export default {
   methods: {
     addMessage(apiName, params, isSuccess, error = null, response = null) {
       const message = {
+        timerVisible: true,
+        remainingTime: 5,
         id: Date.now(),
         apiName,
         params,
@@ -41,15 +44,58 @@ export default {
         status: isSuccess ? '成功' : '失败',
         type: isSuccess ? 'success' : 'error',
         error,
-        timestamp: new Date().toLocaleTimeString()
+        timestamp: new Date().toLocaleTimeString(),
+        isPaused: false,
+        intervalId: null
       }
+      
       this.messages.unshift(message)
+      
+      this.startTimer(message)
+    },
+    startTimer(message) {
+      if (message.intervalId) {
+        clearInterval(message.intervalId)
+      }
+      message.intervalId = setInterval(() => {
+        if (!message.isPaused && message.remainingTime > 0) {
+          const index = this.messages.findIndex(m => m.id === message.id)
+          if (index !== -1) {
+            this.messages[index] = { ...this.messages[index], remainingTime: this.messages[index].remainingTime - 1 }
+            if (this.messages[index].remainingTime === 0) {
+              this.removeMessage(message.id)
+            }
+          }
+        }
+      }, 1000);
     },
     removeMessage(id) {
       const index = this.messages.findIndex(m => m.id === id)
       if (index !== -1) {
+        const message = this.messages[index]
+        if (message.intervalId) {
+          clearInterval(message.intervalId)
+        }
         this.messages.splice(index, 1)
       }
+    },
+    pauseTimer(message) {
+      message.isPaused = true
+      if (message.intervalId) {
+        clearInterval(message.intervalId)
+      }
+    },
+    resumeTimer(message) {
+      message.isPaused = false
+      this.startTimer(message)
+    },
+    clearAllMessages() {
+      this.messages.forEach(message => {
+        if (message.intervalId) {
+          clearInterval(message.intervalId);
+        }
+      });
+      this.messages = [];
     }
   }
 }
@@ -81,6 +127,13 @@ export default {
 
 .api-message.error {
   border-left: 4px solid #f44336;
+}
+
+.timer {
+  text-align: center;
+  font-size: 0.9em;
+  color: #666;
+  margin-bottom: 8px;
 }
 
 .message-header {

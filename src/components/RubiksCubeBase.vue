@@ -3,7 +3,7 @@
     <RubiksCubeFace v-for="(face, index) in faces" :key="face.name"
       :rotate="face.rotate"
       :translateZ="translateZ(size)"
-      :color="getFaceColor(index)"
+      :color="getFaceColor(face.faceIndex)"
     />
   </div>
 </template>
