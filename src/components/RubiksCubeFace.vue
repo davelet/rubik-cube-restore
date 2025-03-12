@@ -1,20 +1,23 @@
 <template>
   <div class="face" :style="faceStyle">
-    <div v-for="(block, blockIndex) in 9" :key="blockIndex" class="block" :style="blockStyle(blockIndex)"></div>
+    <div v-for="(block, blockIndex) in 9" :key="blockIndex">
+      <RubiksCubeFaceBlock
+        :color="color[blockIndex % 3][Math.floor(blockIndex / 3)]"
+        :x="blockIndex % 3"
+        :y="Math.floor(blockIndex / 3)"
+      />
+    </div>
   </div>
 </template>
 
 <script>
-const colorMap = {
-  0: 'yellow',  // UP
-  1: 'gainsboro',   // DOWN
-  2: 'blue',   // FRONT
-  3: 'green',    // BACK
-  4: 'orange',  // LEFT
-  5: 'red'      // RIGHT
-}
+import RubiksCubeFaceBlock from './RubiksCubeFaceBlock.vue'
+
 export default {
   name: 'RubiksCubeFace',
+  components: {
+    RubiksCubeFaceBlock
+  },
   props: {
     rotate: {
       type: String,
@@ -41,21 +44,6 @@ export default {
       }
     }
   },
-  methods: {
-    blockStyle(index) {
-      const x = index % 3;
-      const y = Math.floor(index / 3);
-      return {
-        position: 'absolute',
-        width: '33.33%',
-        height: '33.33%',
-        backgroundColor: colorMap[this.color[x][y]],
-        left: `${x * 33.33}%`,
-        top: `${y * 33.33}%`,
-        border: '1px solid black',
-      }
-    }
-  }
 }
 </script>
 
