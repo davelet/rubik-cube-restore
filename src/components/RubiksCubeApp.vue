@@ -17,7 +17,7 @@
       :key="index" 
       :style="cubeContainerStyle(cube)"
     >
-      <RubiksCubeBase 
+      <RubiksCube 
         :size="cube.size" 
         :cubeState="cube.cubeState" 
         :converedFaces="cube.coveredFaces" 
@@ -33,15 +33,15 @@
 
 <script>
 import { useCubeStore } from '../stores/cube';
-import RubiksCubeBase from './RubiksCubeBase.vue';
+import RubiksCube from './RubiksCube.vue';
 import RubiksCubeRotationControls from './RubiksCubeRotationControls.vue';
 import ApiMessageDisplay from './ApiMessageDisplay.vue';
 
 export default {
-  name: 'RubiksCubeOnTauri',
+  name: 'RubiksCubeApp',
 
   components: {
-    RubiksCubeBase,
+    RubiksCube,
     RubiksCubeRotationControls,
     ApiMessageDisplay
   },
