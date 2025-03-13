@@ -6,34 +6,24 @@
       <div class="axis y-axis"></div>
       <div class="axis z-axis"></div>
     </div>
-    <RubiksCubeRotationControls 
-      @rotate="handleRotation" 
-      @reset="initCubeState" 
-      @debug-toggle="handleDebugToggle"
-      :showDebugMessages="showDebugMessages" 
-    />
-    <div 
-      v-for="(cube, index) in cubes" 
-      :key="index" 
-      :style="cubeContainerStyle(cube)"
-    >
-      <RubiksCube 
-        :size="cube.size" 
-        :cubeState="cube.cubeState" 
-        :converedFaces="cube.coveredFaces" 
-      />
+    <RubiksCubeRotationControls @rotate="handleRotation" @reset="initCubeState" @debug-toggle="handleDebugToggle"
+      :showDebugMessages="showDebugMessages" />
+    <div v-for="(cube, index) in cubes" :key="index" :style="cubeContainerStyle(cube)">
+      <RubiksCubeSingleBack v-if="index === 0" :size="cube.size" :cubeState="cube.cubeState" />
+      <RubiksCubeSingleRight v-if="index === 1" :size="cube.size" :cubeState="cube.cubeState" />
+      <RubiksCubeSinglePreview v-if="index === 2" :size="cube.size" :cubeState="cube.cubeState" />
+      <RubiksCubeSingleBottom v-if="index === 3" :size="cube.size" :cubeState="cube.cubeState" />
     </div>
-    <ApiMessageDisplay 
-      ref="apiMessage" 
-      v-if="showDebugMessages" 
-      class="message-display"
-    />
+    <ApiMessageDisplay ref="apiMessage" v-if="showDebugMessages" class="message-display" />
   </div>
 </template>
 
 <script>
 import { useCubeStore } from '../stores/cube';
-import RubiksCube from './RubiksCube.vue';
+import RubiksCubeSingleNormal from './RubiksCubeSingleNormal.vue';
+import RubiksCubeSingleRight from './RubiksCubeSingleRight.vue';
+import RubiksCubeSingleBack from './RubiksCubeSingleBack.vue';
+import RubiksCubeSingleBottom from './RubiksCubeSingleBottom.vue';
 import RubiksCubeRotationControls from './RubiksCubeRotationControls.vue';
 import ApiMessageDisplay from './ApiMessageDisplay.vue';
 
@@ -41,7 +31,10 @@ export default {
   name: 'RubiksCubeApp',
 
   components: {
-    RubiksCube,
+    RubiksCubeSinglePreview: RubiksCubeSingleNormal,
+    RubiksCubeSingleRight,
+    RubiksCubeSingleBack,
+    RubiksCubeSingleBottom,
     RubiksCubeRotationControls,
     ApiMessageDisplay
   },
@@ -54,7 +47,7 @@ export default {
 
   data() {
     return {
-      showDebugMessages: false,
+      showDebugMessages: false
     };
   },
 
@@ -62,44 +55,31 @@ export default {
     cubes() {
       return this.store.cubes;
     },
+    showCubePreviews() {
+      return this.cubes && this.cubes.length === 4;
+    }
   },
 
   methods: {
     cubeContainerStyle(cube) {
       return {
         position: 'absolute',
-        transformStyle: 'preserve-3d',
-        transform: `translate3d(${cube.x + cube.size}px, ${cube.y + cube.size / 2}px, 0px) rotateX(${cube.rotateX}deg) rotateY(${cube.rotateY}deg)`,
+        left: `${cube.x + cube.size}px`,
+        top: `${cube.y + cube.size}px`,
+        transform: `rotateX(${cube.rotateX}deg) rotateY(${cube.rotateY}deg)`,
+        transformStyle: 'preserve-3d'
       }
     },
-
-    handleDebugToggle(value) {
-      this.showDebugMessages = value;
-      this.handleDebugMessage(value);
+    async handleRotation(params) {
+      const result = await this.store.handleRotation(params);
+      this.handleApiResponse('turn', params, result);
     },
-
-    handleDebugMessage(isEnabled) {
-      if (isEnabled) {
-        this.$refs.apiMessage?.addMessage(
-          'debug_mode',
-          null,
-          true,
-          null,
-          '调试模式已启用'
-        );
-      } else {
-        this.$refs.apiMessage?.clearAllMessages();
-      }
-    },
-
-    async handleRotation(rotationParams) {
-      const result = await this.store.handleRotation(rotationParams);
-      this.handleApiResponse('turn', rotationParams, result);
-    },
-
     async initCubeState() {
       const result = await this.store.initCubeState();
       this.handleApiResponse('init_result', null, result, '初始化完成');
+    },
+    handleDebugToggle(value) {
+      this.showDebugMessages = value;
     },
 
     handleApiResponse(type, params, result, successMessage) {
@@ -122,10 +102,10 @@ export default {
     }
   },
 
-  async created() {
-    const result = await this.store.initCubeState();
+  async mounted() {
+    await this.initCubeState();
   }
-}
+};
 </script>
 
 <style scoped>
@@ -138,9 +118,9 @@ export default {
   perspective-origin: 50% 50%;
   background-color: rgb(184, 163, 197);
   overflow: hidden;
+
 }
 
-/* Coordinate System Styles */
 .coordinate-system {
   position: absolute;
   top: 15%;
@@ -194,10 +174,7 @@ export default {
 .message-display {
   position: fixed;
   bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
+  right: 20px;
   z-index: 1000;
-  width: 80%;
-  max-width: 600px;
 }
 </style>

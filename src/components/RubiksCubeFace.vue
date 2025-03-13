@@ -2,9 +2,9 @@
   <div class="face" :style="faceStyle">
     <div v-for="(block, blockIndex) in 9" :key="blockIndex">
       <RubiksCubeFaceBlock
-        :color="color[blockIndex % 3][Math.floor(blockIndex / 3)]"
-        :x="blockIndex % 3"
-        :y="Math.floor(blockIndex / 3)"
+        :color="color[Math.floor(blockIndex / 3)][blockIndex % 3]"
+        :x="reverseX ? 2 - (blockIndex % 3) : blockIndex % 3"
+        :y="reverseY ? 2 - Math.floor(blockIndex / 3) : Math.floor(blockIndex / 3)"
       />
     </div>
   </div>
@@ -30,6 +30,14 @@ export default {
     color: {
       type: Array,
       required: true
+    },
+    reverseX: {
+      type: Boolean,
+      default: false
+    },
+    reverseY: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {

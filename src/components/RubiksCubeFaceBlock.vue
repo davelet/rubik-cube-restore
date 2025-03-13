@@ -5,7 +5,7 @@
 <script>
 const colorMap = {
   0: 'yellow',  // UP
-  1: 'gainsboro',   // DOWN
+  1: 'white',   // DOWN
   2: 'blue',   // FRONT
   3: 'green',    // BACK
   4: 'orange',  // LEFT
