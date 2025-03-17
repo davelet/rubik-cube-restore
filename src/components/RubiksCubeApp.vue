@@ -7,6 +7,8 @@
       <div class="axis z-axis"></div>
     </div>
     <RubiksCubeRotationControls @rotate="handleRotation" @reset="initCubeState" @debug-toggle="handleDebugToggle"
+      @solve-panel-toggle="handleSolvePanelToggle" @solve-lower-layer="handleSolveLowerLayer"
+      @solve-middle-layer="handleSolveMiddleLayer" @solve-upper-layer="handleSolveUpperLayer"
       :showDebugMessages="showDebugMessages" />
     <div v-for="(cube, index) in cubes" :key="index" :style="cubeContainerStyle(cube)">
       <RubiksCubeSingleBack v-if="index === 0" :size="cube.size" :cubeState="cube.cubeState" />
@@ -26,6 +28,7 @@ import RubiksCubeSingleBack from './RubiksCubeSingleBack.vue';
 import RubiksCubeSingleBottom from './RubiksCubeSingleBottom.vue';
 import RubiksCubeRotationControls from './RubiksCubeRotationControls.vue';
 import ApiMessageDisplay from './ApiMessageDisplay.vue';
+import TauriService from '../services/invoke-utils';
 
 export default {
   name: 'RubiksCubeApp',
@@ -42,12 +45,13 @@ export default {
   setup() {
     const store = useCubeStore();
     const cubeSize = store.cubeSize;
-    return { store, cubeSize };
+    const PANEL_SIZE = 200; // 面板展开/收起时的尺寸变化值
+    return { store, cubeSize, PANEL_SIZE };
   },
 
   data() {
     return {
-      showDebugMessages: false
+      showDebugMessages: false,
     };
   },
 
@@ -99,7 +103,77 @@ export default {
           result.error || `${type}失败`
         );
       }
-    }
+    },
+
+    async handleSolvePanelToggle(isOpen) {
+      try {
+        const { result: { width, height } } = await TauriService.getWindowSize();
+        if (isOpen) {
+          await TauriService.resizeWindow({
+            height: height + this.PANEL_SIZE,
+            width: width + this.PANEL_SIZE
+          });
+        } else {
+          await TauriService.resizeWindow({
+            height: height - this.PANEL_SIZE,
+            width: width - this.PANEL_SIZE
+          });
+        }
+      } catch (error) {
+        this.handleApiResponse('resize_window', { isOpen }, {
+          success: false,
+          error: '调整窗口大小失败' + error
+        });
+      }
+    },
+
+    async handleSolveLowerLayer() {
+      try {
+        const result = await TauriService.solveLayer('lower');
+        this.handleApiResponse('solve_lower_layer', null, result, '底层求解完成');
+      } catch (error) {
+        this.handleApiResponse('solve_lower_layer', null, {
+          success: false,
+          error: '底层求解失败'
+        });
+      }
+    },
+
+    async handleSolveMiddleLayer() {
+      try {
+        const result = await TauriService.solveLayer('middle');
+        this.handleApiResponse('solve_middle_layer', null, result, '中层求解完成');
+      } catch (error) {
+        this.handleApiResponse('solve_middle_layer', null, {
+          success: false,
+          error: '中层求解失败'
+        });
+      }
+    },
+
+    async handleSolveUpperLayer() {
+      try {
+        const result = await TauriService.solveLayer('upper');
+        this.handleApiResponse('solve_upper_layer', null, result, '顶层求解完成');
+      } catch (error) {
+        this.handleApiResponse('solve_upper_layer', null, {
+          success: false,
+          error: '顶层求解失败'
+        });
+      }
+    },
+    async getWindowSize() {
+      try {
+        const { width, height } = await invoke('get_window_size');
+        return { width, height };
+      } catch (error) {
+        this.handleApiResponse('solve_upper_layer', null, {
+          success: false,
+          error: '获取窗口大小失败:' + error
+        });
+        return { width: 800, height: 700 };
+      }
+    },
   },
 
   async mounted() {
@@ -140,12 +214,10 @@ export default {
   position: absolute;
   transform-origin: center center;
   transform-style: preserve-3d;
-  /* Important for 3D transformations */
 }
 
 .x-axis {
   width: 200px;
-  /* Adjust length as needed */
   height: 2px;
   background-color: red;
   transform: translateX(-50%);
@@ -154,7 +226,6 @@ export default {
 .y-axis {
   width: 2px;
   height: 200px;
-  /* Adjust length as needed */
   background-color: green;
   transform: translateY(-50%);
 }
@@ -162,7 +233,6 @@ export default {
 .z-axis {
   width: 2px;
   height: 200px;
-  /* Adjust length as needed */
   background-color: yellow;
   transform: rotateX(90deg) translateZ(100px);
 }

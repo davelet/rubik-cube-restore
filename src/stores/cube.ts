@@ -1,12 +1,12 @@
 import { defineStore } from 'pinia'
-import { invoke } from '@tauri-apps/api/core'
+import TauriService from '../services/invoke-utils'
 
 const cubeSize = 90;
 const spacing = cubeSize * 4;
 
 export const useCubeStore = defineStore('cube', {
   state: () => ({
-    cubeState: null as number[][][] | null,
+    cubeState: undefined as number[][][] | undefined,
   }),
 
   getters: {
@@ -76,28 +76,24 @@ export const useCubeStore = defineStore('cube', {
 
   actions: {
     async initCubeState() {
-      try {
-        this.cubeState = await invoke('init_get_get_state')
-        return { success: true, result: this.cubeState }
-      } catch (error) {
-        console.error('Error fetching cube state:', error)
-        return { success: false, error }
+      const response = await TauriService.initCubeState();
+      if (response.success) {
+        this.cubeState = response.result;
       }
+      return response;
     },
     async handleRotation({ face, direction }) {
       const params = {
-        state: this.cubeState,
+        state: this.cubeState as number[][][],
         face,
         direction: direction === 0
       }
 
-      try {
-        const result = await invoke<number[][][]>('turn', params)
-        this.cubeState = result
-        return { success: true, result }
-      } catch (error) {
-        return { success: false, error }
+      const response = await TauriService.handleRotation(params);
+      if (response.success) {
+        this.cubeState = response.result;
       }
+      return response;
     },
   },
 })

@@ -26,6 +26,15 @@
         <button @click="handleRotation" class="rotate-button">执行旋转</button>
       </div>
     </div>
+    <div class="solve-control">
+      <button class="solve-btn" @click="toggleSolvePanel">层先法求解</button>
+      
+      <div class="solve-steps" v-show="showSolvePanel">
+        <button class="step-btn" @click="solveLowerLayer">底层求解</button>
+        <button class="step-btn" @click="solveMiddleLayer">中层求解</button>
+        <button class="step-btn" @click="solveUpperLayer">顶层求解</button>
+      </div>
+    </div>
     <div class="reset-control">
       <button @click="handleReset" class="reset-button">初始化</button>
     </div>
@@ -51,7 +60,8 @@ export default {
     return {
       selectedFace: 0,
       rotationDirection: 'clockwise',
-      faces: ['上面', '下面', '前面', '后面', '左面', '右面']
+      faces: ['上面', '下面', '前面', '后面', '左面', '右面'],
+      showSolvePanel: false
     };
   },
   methods: {
@@ -66,6 +76,20 @@ export default {
     },
     toggleDebug(event) {
       this.$emit('debug-toggle', event.target.checked);
+    },
+    async toggleSolvePanel() {
+      this.showSolvePanel = !this.showSolvePanel;
+      // 发送事件给父组件处理窗口大小调整
+      this.$emit('solve-panel-toggle', this.showSolvePanel);
+    },
+    solveLowerLayer() {
+      this.$emit('solve-lower-layer');
+    },
+    solveMiddleLayer() {
+      this.$emit('solve-middle-layer');
+    },
+    solveUpperLayer() {
+      this.$emit('solve-upper-layer');
     }
   }
 }
@@ -90,7 +114,12 @@ export default {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.rotation-controls,
+.rotation-controls {
+  border: 1px solid #ddd;
+  margin-bottom: 0;
+  padding: 15px;
+}
+
 .reset-control {
   margin-bottom: 0;
 }
@@ -185,5 +214,47 @@ input[type="radio"] {
 
 .debug-label input[type="checkbox"] {
   margin: 0;
+}
+
+.solve-control {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.solve-btn {
+  padding: 8px 16px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.solve-btn:hover {
+  background-color: #45a049;
+}
+
+.solve-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+}
+
+.step-btn {
+  padding: 6px 12px;
+  background-color: #2196F3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.step-btn:hover {
+  background-color: #1976D2;
 }
 </style>
