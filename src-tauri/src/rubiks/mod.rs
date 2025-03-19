@@ -9,6 +9,7 @@ use utils::*;
 
 mod cube;
 mod shuffler;
+mod solver;
 mod utils;
 
 #[tauri::command]
@@ -39,4 +40,11 @@ pub fn turn(state: [[[u8; 3]; 3]; 6], face: u8, direction: bool) -> [[[u8; 3]; 3
         },
     );
     color_state_to_u8(&cube)
+}
+
+#[tauri::command]
+pub fn solve(state: [[[u8; 3]; 3]; 6], target: u8) -> Vec<String> {
+    let cube = u8_to_color_state(state);
+    let solver = solver::Solver::new(cube, solver::SolveTarget::from_u8(target));
+    solver.solve()
 }

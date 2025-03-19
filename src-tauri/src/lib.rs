@@ -10,6 +10,7 @@ pub fn run() {
             rubiks::init_get_get_state,
             rubiks::shuffle,
             rubiks::turn,
+            rubiks::solve,
             lib_ext::get_current_time,
             lib_ext::resize_window,
             lib_ext::get_window_size,
