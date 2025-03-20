@@ -1,4 +1,4 @@
-use layer_solvers::{BottomCrossSolver, Solver as _, SolverEnum};
+use layer_solvers::*;
 
 use super::cube::Cube;
 
@@ -39,29 +39,32 @@ impl SolveTarget {
     }
 }
 
-pub struct Solver {
+pub struct Executor {
     cube: Cube,
     target: SolveTarget,
 }
 
-impl Solver {
-    pub fn new(cube: Cube, target: SolveTarget) -> Solver {
-        Solver { cube, target }
+impl Executor {
+    pub fn new(cube: Cube, target: SolveTarget) -> Executor {
+        Executor { cube, target }
     }
 
-    pub fn solve(&self) -> Vec<String> {
+    pub fn execute(&self) -> Vec<String> {
         if self.cube.is_solved() {
             return vec![];
         }
+
         let mut seq = vec![];
         let first_solver = BottomCrossSolver {
             cube: self.cube.clone(),
         };
         let mut solver = SolverEnum::BottomCross(first_solver);
+
         loop {
-            let target = solver.target();
-            if target == self.target {
+            if !solver.is_target_solved() {
                 seq.extend(solver.solve_target());
+            }
+            if solver.target() == self.target {
                 break;
             }
 
@@ -75,4 +78,56 @@ impl Solver {
         }
         seq
     }
+}
+
+pub enum SolverEnum {
+    BottomCross(BottomCrossSolver),
+    BottomCorner(BottomCornerSolver),
+    MiddleEdge(MiddleSolver),
+    TopCross(TopCrossSolver),
+    TopFace(TopFaceSolver),
+    TopEdge(TopEdgeSolver),
+    TopCorner(TopCornerSolver),
+}
+
+macro_rules! match_solver_enum {
+    ($self:ident, $method:ident) => {
+        match $self {
+            SolverEnum::BottomCross(solver) => solver.$method(),
+            SolverEnum::BottomCorner(solver) => solver.$method(),
+            SolverEnum::MiddleEdge(solver) => solver.$method(),
+            SolverEnum::TopCross(solver) => solver.$method(),
+            SolverEnum::TopFace(solver) => solver.$method(),
+            SolverEnum::TopEdge(solver) => solver.$method(),
+            SolverEnum::TopCorner(solver) => solver.$method(),
+        }
+    };
+}
+
+impl Solver for SolverEnum {
+    fn target(&self) -> SolveTarget {
+        match_solver_enum!(self, target)
+    }
+
+    fn solve_target(&self) -> Vec<String> {
+        match_solver_enum!(self, solve_target)
+    }
+
+    fn is_target_solved(&self) -> bool {
+        match_solver_enum!(self, is_target_solved)
+    }
+
+    fn next_solver(&self) -> Option<SolverEnum> {
+        match_solver_enum!(self, next_solver)
+    }
+}
+
+pub trait Solver {
+    fn target(&self) -> SolveTarget;
+
+    fn solve_target(&self) -> Vec<String>;
+
+    fn is_target_solved(&self) -> bool;
+
+    fn next_solver(&self) -> Option<SolverEnum>;
 }

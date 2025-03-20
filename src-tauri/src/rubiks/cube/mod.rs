@@ -1,7 +1,7 @@
 //! Cube module
 
 use color::Color;
-use face::{CubeFace, FaceOrientation};
+use face::FaceOrientation;
 
 pub mod color;
 pub mod face;
@@ -13,27 +13,12 @@ pub struct Cube {
 
 impl Cube {
     pub fn new() -> Cube {
-        let mut faces = Vec::new();
-        for i in 0..6 {
-            let face = match i {
-                0 => CubeFace::new(FaceOrientation::Up),
-                1 => CubeFace::new(FaceOrientation::Down),
-                2 => CubeFace::new(FaceOrientation::Front),
-                3 => CubeFace::new(FaceOrientation::Back),
-                4 => CubeFace::new(FaceOrientation::Left),
-                5 => CubeFace::new(FaceOrientation::Right),
-                _ => panic!(),
-            };
-            faces.push((face, i));
-        }
-
         let mut state = [[[Color::White; 3]; 3]; 6];
 
-        // 通过faces初始化每个面的颜色
-        for face in &faces {
+        for face in FaceOrientation::values() {
             for i in 0..3 {
                 for j in 0..3 {
-                    state[face.1 as usize][i][j] = face.0.color;
+                    state[face.index()][i][j] = face.color();
                 }
             }
         }
@@ -61,12 +46,16 @@ impl Cube {
         }
         true
     }
-    
-    pub fn get_color(&self, face: usize, i: usize, j: usize) -> Color {
+
+    pub fn get_block_color(&self, face: usize, i: usize, j: usize) -> Color {
         self.state[face][i][j]
     }
 
-    pub fn set_color(&mut self, face: usize, i: usize, j: usize, color: Color) {
+    pub fn set_block_color(&mut self, face: usize, i: usize, j: usize, color: Color) {
         self.state[face][i][j] = color;
+    }
+
+    pub fn get_face_state(&self, face: usize) -> [[Color; 3]; 3] {
+        self.state[face]
     }
 }

@@ -1,7 +1,7 @@
 //! Rubik's Cube implementation module
 
 use cube::{
-    face::{CubeFace, FaceOrientation, TwistDirection},
+    face::{FaceOrientation, TwistDirection},
     Cube,
 };
 use shuffler::CubeShuffler;
@@ -32,7 +32,7 @@ pub fn turn(state: [[[u8; 3]; 3]; 6], face: u8, direction: bool) -> [[[u8; 3]; 3
     let mut cube = u8_to_color_state(state);
     let mut shuffler = CubeShuffler::new(&mut cube);
     shuffler.rotate_face(
-        &CubeFace::new(FaceOrientation::from_u8(face)),
+        FaceOrientation::from_u8(face),
         if direction {
             TwistDirection::Clockwise
         } else {
@@ -45,6 +45,6 @@ pub fn turn(state: [[[u8; 3]; 3]; 6], face: u8, direction: bool) -> [[[u8; 3]; 3
 #[tauri::command]
 pub fn solve(state: [[[u8; 3]; 3]; 6], target: u8) -> Vec<String> {
     let cube = u8_to_color_state(state);
-    let solver = solver::Solver::new(cube, solver::SolveTarget::from_u8(target));
-    solver.solve()
+    let solver = solver::Executor::new(cube, solver::SolveTarget::from_u8(target));
+    solver.execute()
 }

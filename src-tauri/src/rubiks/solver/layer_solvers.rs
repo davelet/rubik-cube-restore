@@ -1,56 +1,6 @@
-use crate::rubiks::cube::Cube;
+use crate::rubiks::cube::{color::Color, face::FaceOrientation, Cube};
 
-use super::SolveTarget;
-
-macro_rules! match_solver_enum {
-    ($self:ident, $method:ident) => {
-        match $self {
-            SolverEnum::BottomCross(solver) => solver.$method(),
-            SolverEnum::BottomCorner(solver) => solver.$method(),
-            SolverEnum::MiddleEdge(solver) => solver.$method(),
-            SolverEnum::TopCross(solver) => solver.$method(),
-            SolverEnum::TopFace(solver) => solver.$method(),
-            SolverEnum::TopEdge(solver) => solver.$method(),
-            SolverEnum::TopCorner(solver) => solver.$method(),
-        }
-    };
-}
-pub enum SolverEnum {
-    BottomCross(BottomCrossSolver),
-    BottomCorner(BottomCornerSolver),
-    MiddleEdge(MiddleSolver),
-    TopCross(TopCrossSolver),
-    TopFace(TopFaceSolver),
-    TopEdge(TopEdgeSolver),
-    TopCorner(TopCornerSolver),
-}
-
-impl Solver for SolverEnum {
-    fn target(&self) -> SolveTarget {
-        match_solver_enum!(self, target)
-    }
-
-    fn solve_target(&self) -> Vec<String> {
-        match_solver_enum!(self, solve_target)
-    }
-
-    fn target_solved(&self) -> bool {
-        match_solver_enum!(self, target_solved)
-    }
-
-    fn next_solver(&self) -> Option<SolverEnum> {
-        match_solver_enum!(self, next_solver)
-    }
-}
-pub trait Solver {
-    fn target(&self) -> SolveTarget;
-
-    fn solve_target(&self) -> Vec<String>;
-
-    fn target_solved(&self) -> bool;
-
-    fn next_solver(&self) -> Option<SolverEnum>;
-}
+use super::*;
 
 pub struct BottomCrossSolver {
     pub cube: Cube,
@@ -62,17 +12,87 @@ impl Solver for BottomCrossSolver {
     }
 
     fn solve_target(&self) -> Vec<String> {
-        vec![]
+        let mut steps = vec![];
+
+        for f in 2..=5 {
+            let face = FaceOrientation::from_u8(f as u8);
+            steps.extend(self.solve_edge(face));
+        }
+
+        steps
     }
 
-    fn target_solved(&self) -> bool {
-        false
+    fn is_target_solved(&self) -> bool {
+        let face_colors = self
+            .cube
+            .get_face_state(FaceOrientation::Down(Color::White).index());
+        let color = face_colors[1][1];
+        for i in 0..3 {
+            for j in 0..3 {
+                if i == 1 && j == 1 {
+                    continue;
+                }
+                if face_colors[i][j] != color {
+                    return false;
+                }
+            }
+        }
+
+        for f in 2..=5 {
+            let face_colors = self.cube.state[f];
+            let color = face_colors[1][1];
+            for j in 0..3 {
+                if face_colors[2][j] != color {
+                    return false;
+                }
+            }
+        }
+
+        true
     }
 
     fn next_solver(&self) -> Option<SolverEnum> {
         Some(SolverEnum::BottomCorner(BottomCornerSolver {
             cube: self.cube.clone(),
         }))
+    }
+}
+
+impl BottomCrossSolver {
+    fn solve_edge(&self, face: FaceOrientation) -> Vec<String> {
+        if self.is_edge_solved(face) {
+            return vec![];
+        }
+
+        vec![]
+    }
+
+    fn is_edge_solved(&self, face: FaceOrientation) -> bool {
+        let face_colors = self.cube.get_face_state(face.index());
+        let color = face_colors[1][1];
+        if face_colors[2][1] != color {
+            return false;
+        }
+
+        let face_colors = self
+            .cube
+            .get_face_state(FaceOrientation::Down(Color::White).index());
+        let color = face_colors[1][1];
+        let down_center = Self::down_center_index(face);
+        if face_colors[down_center.0][down_center.1] != color {
+            return false;
+        }
+        true
+    }
+
+    fn down_center_index(face: FaceOrientation) -> (usize, usize) {
+        match face {
+            FaceOrientation::Front(_) => (0, 1),
+            FaceOrientation::Back(_) => (2, 1),
+            FaceOrientation::Left(_) => (1, 0),
+            FaceOrientation::Right(_) => (1, 2),
+            _ => panic!("Invalid face orientation: {:?}", face),
+        }
     }
 }
 
@@ -89,7 +109,7 @@ impl Solver for BottomCornerSolver {
         vec![]
     }
 
-    fn target_solved(&self) -> bool {
+    fn is_target_solved(&self) -> bool {
         false
     }
 
@@ -113,7 +133,7 @@ impl Solver for MiddleSolver {
         vec![]
     }
 
-    fn target_solved(&self) -> bool {
+    fn is_target_solved(&self) -> bool {
         false
     }
 
@@ -137,7 +157,7 @@ impl Solver for TopCrossSolver {
         vec![]
     }
 
-    fn target_solved(&self) -> bool {
+    fn is_target_solved(&self) -> bool {
         false
     }
 
@@ -161,7 +181,7 @@ impl Solver for TopFaceSolver {
         vec![]
     }
 
-    fn target_solved(&self) -> bool {
+    fn is_target_solved(&self) -> bool {
         false
     }
 
@@ -185,7 +205,7 @@ impl Solver for TopEdgeSolver {
         vec![]
     }
 
-    fn target_solved(&self) -> bool {
+    fn is_target_solved(&self) -> bool {
         false
     }
 
@@ -209,7 +229,7 @@ impl Solver for TopCornerSolver {
         vec![]
     }
 
-    fn target_solved(&self) -> bool {
+    fn is_target_solved(&self) -> bool {
         false
     }
 
