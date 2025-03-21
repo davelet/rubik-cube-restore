@@ -18,7 +18,7 @@ impl Cube {
         for face in FaceOrientation::values() {
             for i in 0..3 {
                 for j in 0..3 {
-                    state[face.index()][i][j] = face.color();
+                    state[face.ordinal()][i][j] = face.color();
                 }
             }
         }

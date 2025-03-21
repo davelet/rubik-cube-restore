@@ -24,7 +24,7 @@ impl FaceOrientation {
         }
     }
 
-    pub fn index(&self) -> usize {
+    pub fn ordinal(&self) -> usize {
         match self {
             FaceOrientation::Up(_) => 0,
             FaceOrientation::Down(_) => 1,

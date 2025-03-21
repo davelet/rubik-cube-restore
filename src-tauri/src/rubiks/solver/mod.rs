@@ -1,3 +1,5 @@
+use std::{cell::RefCell, rc::Rc};
+
 use layer_solvers::*;
 
 use super::cube::Cube;
@@ -39,95 +41,116 @@ impl SolveTarget {
     }
 }
 
-pub struct Executor {
-    cube: Cube,
-    target: SolveTarget,
-}
-
-impl Executor {
-    pub fn new(cube: Cube, target: SolveTarget) -> Executor {
-        Executor { cube, target }
+pub fn execute(cube: Cube, target: SolveTarget) -> Vec<char> {
+    if cube.is_solved() {
+        return vec![];
     }
 
-    pub fn execute(&self) -> Vec<String> {
-        if self.cube.is_solved() {
-            return vec![];
+    let mut seq = vec![];
+    let first_solver = BottomCrossSolver { cube };
+    let mut solver = SolverEnum::BottomCross(Rc::new(RefCell::new(Box::new(first_solver))));
+
+    loop {
+        if !solver.is_target_solved() {
+            seq.extend(solver.solve_target());
+        }
+        if solver.target() == target {
+            break;
         }
 
-        let mut seq = vec![];
-        let first_solver = BottomCrossSolver {
-            cube: self.cube.clone(),
+        let next_solver = solver.next_solver();
+        solver = match next_solver {
+            Some(s) => s,
+            None => break,
         };
-        let mut solver = SolverEnum::BottomCross(first_solver);
-
-        loop {
-            if !solver.is_target_solved() {
-                seq.extend(solver.solve_target());
-            }
-            if solver.target() == self.target {
-                break;
-            }
-
-            let next_solver = solver.next_solver();
-            match next_solver {
-                Some(s) => {
-                    solver = s;
-                }
-                None => break,
-            }
-        }
-        seq
     }
+    seq
 }
 
+#[derive(Clone)]
 pub enum SolverEnum {
-    BottomCross(BottomCrossSolver),
-    BottomCorner(BottomCornerSolver),
-    MiddleEdge(MiddleSolver),
-    TopCross(TopCrossSolver),
-    TopFace(TopFaceSolver),
-    TopEdge(TopEdgeSolver),
-    TopCorner(TopCornerSolver),
-}
-
-macro_rules! match_solver_enum {
-    ($self:ident, $method:ident) => {
-        match $self {
-            SolverEnum::BottomCross(solver) => solver.$method(),
-            SolverEnum::BottomCorner(solver) => solver.$method(),
-            SolverEnum::MiddleEdge(solver) => solver.$method(),
-            SolverEnum::TopCross(solver) => solver.$method(),
-            SolverEnum::TopFace(solver) => solver.$method(),
-            SolverEnum::TopEdge(solver) => solver.$method(),
-            SolverEnum::TopCorner(solver) => solver.$method(),
-        }
-    };
+    BottomCross(Rc<RefCell<Box<BottomCrossSolver>>>),
+    BottomCorner(Rc<RefCell<Box<BottomCornerSolver>>>),
+    MiddleEdge(Rc<RefCell<Box<MiddleSolver>>>),
+    TopCross(Rc<RefCell<Box<TopCrossSolver>>>),
+    TopFace(Rc<RefCell<Box<TopFaceSolver>>>),
+    TopEdge(Rc<RefCell<Box<TopEdgeSolver>>>),
+    TopCorner(Rc<RefCell<Box<TopCornerSolver>>>),
 }
 
 impl Solver for SolverEnum {
     fn target(&self) -> SolveTarget {
-        match_solver_enum!(self, target)
+        match self {
+            SolverEnum::BottomCross(ref_cell) => ref_cell.borrow_mut().target(),
+            SolverEnum::BottomCorner(ref_cell) => ref_cell.borrow_mut().target(),
+            SolverEnum::MiddleEdge(ref_cell) => ref_cell.borrow_mut().target(),
+            SolverEnum::TopCross(ref_cell) => ref_cell.borrow_mut().target(),
+            SolverEnum::TopFace(ref_cell) => ref_cell.borrow_mut().target(),
+            SolverEnum::TopEdge(ref_cell) => ref_cell.borrow_mut().target(),
+            SolverEnum::TopCorner(ref_cell) => ref_cell.borrow_mut().target(),
+        }
     }
 
-    fn solve_target(&self) -> Vec<String> {
-        match_solver_enum!(self, solve_target)
+    fn solve_target(&mut self) -> Vec<char> {
+        match self {
+            SolverEnum::BottomCross(ref_cell) => ref_cell.borrow_mut().solve_target(),
+            SolverEnum::BottomCorner(ref_cell) => ref_cell.borrow_mut().solve_target(),
+            SolverEnum::MiddleEdge(ref_cell) => ref_cell.borrow_mut().solve_target(),
+            SolverEnum::TopCross(ref_cell) => ref_cell.borrow_mut().solve_target(),
+            SolverEnum::TopFace(ref_cell) => ref_cell.borrow_mut().solve_target(),
+            SolverEnum::TopEdge(ref_cell) => ref_cell.borrow_mut().solve_target(),
+            SolverEnum::TopCorner(ref_cell) => ref_cell.borrow_mut().solve_target(),
+        }
     }
 
     fn is_target_solved(&self) -> bool {
-        match_solver_enum!(self, is_target_solved)
+        match self {
+            SolverEnum::BottomCross(ref_cell) => ref_cell.borrow().is_target_solved(),
+            SolverEnum::BottomCorner(ref_cell) => ref_cell.borrow().is_target_solved(),
+            SolverEnum::MiddleEdge(ref_cell) => ref_cell.borrow().is_target_solved(),
+            SolverEnum::TopCross(ref_cell) => ref_cell.borrow().is_target_solved(),
+            SolverEnum::TopFace(ref_cell) => ref_cell.borrow().is_target_solved(),
+            SolverEnum::TopEdge(ref_cell) => ref_cell.borrow().is_target_solved(),
+            SolverEnum::TopCorner(ref_cell) => ref_cell.borrow().is_target_solved(),
+        }
     }
 
     fn next_solver(&self) -> Option<SolverEnum> {
-        match_solver_enum!(self, next_solver)
+        match self {
+            SolverEnum::BottomCross(ref_cell) => ref_cell.borrow_mut().next_solver(),
+            SolverEnum::BottomCorner(ref_cell) => ref_cell.borrow_mut().next_solver(),
+            SolverEnum::MiddleEdge(ref_cell) => ref_cell.borrow_mut().next_solver(),
+            SolverEnum::TopCross(ref_cell) => ref_cell.borrow_mut().next_solver(),
+            SolverEnum::TopFace(ref_cell) => ref_cell.borrow_mut().next_solver(),
+            SolverEnum::TopEdge(ref_cell) => ref_cell.borrow_mut().next_solver(),
+            SolverEnum::TopCorner(ref_cell) => ref_cell.borrow_mut().next_solver(),
+        }
     }
 }
 
 pub trait Solver {
     fn target(&self) -> SolveTarget;
 
-    fn solve_target(&self) -> Vec<String>;
+    fn solve_target(&mut self) -> Vec<char>;
 
     fn is_target_solved(&self) -> bool;
 
     fn next_solver(&self) -> Option<SolverEnum>;
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::rubiks::shuffler::CubeShuffler;
+
+    use super::*;
+
+    #[test]
+    fn test_solve() {
+        let mut cube = Cube::new();
+        let mut shuffler = CubeShuffler::new(&mut cube);
+        shuffler.shuffle(20);
+        println!("cube is {:?}", cube);
+        let seq = execute(cube, SolveTarget::BottomCross);
+        println!("{:?}", seq);
+    }
 }

@@ -5,6 +5,7 @@ use cube::{
     Cube,
 };
 use shuffler::*;
+use solver::execute;
 use utils::*;
 
 mod cube;
@@ -43,8 +44,8 @@ pub fn turn(state: [[[u8; 3]; 3]; 6], face: u8, direction: bool) -> [[[u8; 3]; 3
 }
 
 #[tauri::command]
-pub fn solve(state: [[[u8; 3]; 3]; 6], target: u8) -> Vec<String> {
+pub fn solve(state: [[[u8; 3]; 3]; 6], target: u8) -> Vec<char> {
     let cube = u8_to_color_state(state);
-    let solver = solver::Executor::new(cube, solver::SolveTarget::from_u8(target));
-    solver.execute()
+    let target = solver::SolveTarget::from_u8(target);
+    execute(cube, target)
 }

@@ -20,7 +20,7 @@ impl<'a> CubeScrambler<'a> {
         let mut current_face = [[Color::White; 3]; 3];
         for i in 0..3 {
             for j in 0..3 {
-                current_face[i][j] = self.cube.get_block_color(face.index(), i, j);
+                current_face[i][j] = self.cube.get_block_color(face.ordinal(), i, j);
             }
         }
 
@@ -29,10 +29,10 @@ impl<'a> CubeScrambler<'a> {
             for j in 0..3 {
                 if direction == TwistDirection::Clockwise {
                     self.cube
-                        .set_block_color(face.index(), i, j, current_face[2 - j][i]);
+                        .set_block_color(face.ordinal(), i, j, current_face[2 - j][i]);
                 } else {
                     self.cube
-                        .set_block_color(face.index(), i, j, current_face[j][2 - i]);
+                        .set_block_color(face.ordinal(), i, j, current_face[j][2 - i]);
                 }
             }
         }
@@ -50,62 +50,62 @@ impl<'a> CubeScrambler<'a> {
                 for i in 0..3 {
                     temp[i] = self
                         .cube
-                        .get_block_color(FaceOrientation::Front(Color::Blue).index(), 0, i);
+                        .get_block_color(FaceOrientation::Front(Color::Blue).ordinal(), 0, i);
                 }
 
                 if direction == TwistDirection::Clockwise {
                     // 前 -> 右 -> 后 -> 左 -> 前
                     for i in 0..3 {
                         self.cube.set_block_color(
-                            FaceOrientation::Front(Color::Blue).index(),
+                            FaceOrientation::Front(Color::Blue).ordinal(),
                             0,
                             i,
                             self.cube
-                                .get_block_color(FaceOrientation::Right(Color::Red).index(), 0, i),
+                                .get_block_color(FaceOrientation::Right(Color::Red).ordinal(), 0, i),
                         );
                         self.cube.set_block_color(
-                            FaceOrientation::Right(Color::Red).index(),
+                            FaceOrientation::Right(Color::Red).ordinal(),
                             0,
                             i,
                             self.cube
-                                .get_block_color(FaceOrientation::Back(Color::Green).index(), 0, i),
+                                .get_block_color(FaceOrientation::Back(Color::Green).ordinal(), 0, i),
                         );
                         self.cube.set_block_color(
-                            FaceOrientation::Back(Color::Green).index(),
+                            FaceOrientation::Back(Color::Green).ordinal(),
                             0,
                             i,
                             self.cube
-                                .get_block_color(FaceOrientation::Left(Color::Orange).index(), 0, i),
+                                .get_block_color(FaceOrientation::Left(Color::Orange).ordinal(), 0, i),
                         );
                         self.cube
-                            .set_block_color(FaceOrientation::Left(Color::Orange).index(), 0, i, temp[i]);
+                            .set_block_color(FaceOrientation::Left(Color::Orange).ordinal(), 0, i, temp[i]);
                     }
                 } else {
                     // 前 <- 右 <- 后 <- 左 <- 前
                     for i in 0..3 {
                         self.cube.set_block_color(
-                            FaceOrientation::Front(Color::Blue).index(),
+                            FaceOrientation::Front(Color::Blue).ordinal(),
                             0,
                             i,
                             self.cube
-                                .get_block_color(FaceOrientation::Left(Color::Orange).index(), 0, i),
+                                .get_block_color(FaceOrientation::Left(Color::Orange).ordinal(), 0, i),
                         );
                         self.cube.set_block_color(
-                            FaceOrientation::Left(Color::Orange).index(),
+                            FaceOrientation::Left(Color::Orange).ordinal(),
                             0,
                             i,
                             self.cube
-                                .get_block_color(FaceOrientation::Back(Color::Green).index(), 0, i),
+                                .get_block_color(FaceOrientation::Back(Color::Green).ordinal(), 0, i),
                         );
                         self.cube.set_block_color(
-                            FaceOrientation::Back(Color::Green).index(),
+                            FaceOrientation::Back(Color::Green).ordinal(),
                             0,
                             i,
                             self.cube
-                                .get_block_color(FaceOrientation::Right(Color::Red).index(), 0, i),
+                                .get_block_color(FaceOrientation::Right(Color::Red).ordinal(), 0, i),
                         );
                         self.cube
-                            .set_block_color(FaceOrientation::Right(Color::Red).index(), 0, i, temp[i]);
+                            .set_block_color(FaceOrientation::Right(Color::Red).ordinal(), 0, i, temp[i]);
                     }
                 }
             }
@@ -114,62 +114,62 @@ impl<'a> CubeScrambler<'a> {
                 for i in 0..3 {
                     temp[i] = self
                         .cube
-                        .get_block_color(FaceOrientation::Front(Color::Blue).index(), 2, i);
+                        .get_block_color(FaceOrientation::Front(Color::Blue).ordinal(), 2, i);
                 }
 
                 if direction == TwistDirection::Clockwise {
                     // 前 <- 左 <- 后 <- 右 <- 前
                     for i in 0..3 {
                         self.cube.set_block_color(
-                            FaceOrientation::Front(Color::Blue).index(),
+                            FaceOrientation::Front(Color::Blue).ordinal(),
                             2,
                             i,
                             self.cube
-                                .get_block_color(FaceOrientation::Left(Color::Orange).index(), 2, i),
+                                .get_block_color(FaceOrientation::Left(Color::Orange).ordinal(), 2, i),
                         );
                         self.cube.set_block_color(
-                            FaceOrientation::Left(Color::Orange).index(),
+                            FaceOrientation::Left(Color::Orange).ordinal(),
                             2,
                             i,
                             self.cube
-                                .get_block_color(FaceOrientation::Back(Color::Green).index(), 2, i),
+                                .get_block_color(FaceOrientation::Back(Color::Green).ordinal(), 2, i),
                         );
                         self.cube.set_block_color(
-                            FaceOrientation::Back(Color::Green).index(),
+                            FaceOrientation::Back(Color::Green).ordinal(),
                             2,
                             i,
                             self.cube
-                                .get_block_color(FaceOrientation::Right(Color::Red).index(), 2, i),
+                                .get_block_color(FaceOrientation::Right(Color::Red).ordinal(), 2, i),
                         );
                         self.cube
-                            .set_block_color(FaceOrientation::Right(Color::Red).index(), 2, i, temp[i]);
+                            .set_block_color(FaceOrientation::Right(Color::Red).ordinal(), 2, i, temp[i]);
                     }
                 } else {
                     // 前 -> 左 -> 后 -> 右 -> 前
                     for i in 0..3 {
                         self.cube.set_block_color(
-                            FaceOrientation::Front(Color::Blue).index(),
+                            FaceOrientation::Front(Color::Blue).ordinal(),
                             2,
                             i,
                             self.cube
-                                .get_block_color(FaceOrientation::Right(Color::Red).index(), 2, i),
+                                .get_block_color(FaceOrientation::Right(Color::Red).ordinal(), 2, i),
                         );
                         self.cube.set_block_color(
-                            FaceOrientation::Right(Color::Red).index(),
+                            FaceOrientation::Right(Color::Red).ordinal(),
                             2,
                             i,
                             self.cube
-                                .get_block_color(FaceOrientation::Back(Color::Green).index(), 2, i),
+                                .get_block_color(FaceOrientation::Back(Color::Green).ordinal(), 2, i),
                         );
                         self.cube.set_block_color(
-                            FaceOrientation::Back(Color::Green).index(),
+                            FaceOrientation::Back(Color::Green).ordinal(),
                             2,
                             i,
                             self.cube
-                                .get_block_color(FaceOrientation::Left(Color::Orange).index(), 2, i),
+                                .get_block_color(FaceOrientation::Left(Color::Orange).ordinal(), 2, i),
                         );
                         self.cube
-                            .set_block_color(FaceOrientation::Left(Color::Orange).index(), 2, i, temp[i]);
+                            .set_block_color(FaceOrientation::Left(Color::Orange).ordinal(), 2, i, temp[i]);
                     }
                 }
             }
@@ -178,62 +178,62 @@ impl<'a> CubeScrambler<'a> {
                 for i in 0..3 {
                     temp[i] = self
                         .cube
-                        .get_block_color(FaceOrientation::Up(Color::White).index(), 2, i);
+                        .get_block_color(FaceOrientation::Up(Color::White).ordinal(), 2, i);
                 }
 
                 if direction == TwistDirection::Clockwise {
                     // 上 -> 右 -> 下 -> 左 -> 上
                     for i in 0..3 {
                         self.cube.set_block_color(
-                            FaceOrientation::Up(Color::White).index(),
+                            FaceOrientation::Up(Color::White).ordinal(),
                             2,
                             i,
                             self.cube
-                                .get_block_color(FaceOrientation::Left(Color::Orange).index(), 2 - i, 2),
+                                .get_block_color(FaceOrientation::Left(Color::Orange).ordinal(), 2 - i, 2),
                         );
                         self.cube.set_block_color(
-                            FaceOrientation::Left(Color::Orange).index(),
+                            FaceOrientation::Left(Color::Orange).ordinal(),
                             2 - i,
                             2,
                             self.cube
-                                .get_block_color(FaceOrientation::Down(Color::Yellow).index(), 0, 2 - i),
+                                .get_block_color(FaceOrientation::Down(Color::Yellow).ordinal(), 0, 2 - i),
                         );
                         self.cube.set_block_color(
-                            FaceOrientation::Down(Color::Yellow).index(),
+                            FaceOrientation::Down(Color::Yellow).ordinal(),
                             0,
                             2 - i,
                             self.cube
-                                .get_block_color(FaceOrientation::Right(Color::Red).index(), i, 0),
+                                .get_block_color(FaceOrientation::Right(Color::Red).ordinal(), i, 0),
                         );
                         self.cube
-                            .set_block_color(FaceOrientation::Right(Color::Red).index(), i, 0, temp[i]);
+                            .set_block_color(FaceOrientation::Right(Color::Red).ordinal(), i, 0, temp[i]);
                     }
                 } else {
                     // 上 <- 右 <- 下 <- 左 <- 上
                     for i in 0..3 {
                         self.cube.set_block_color(
-                            FaceOrientation::Up(Color::White).index(),
+                            FaceOrientation::Up(Color::White).ordinal(),
                             2,
                             i,
                             self.cube
-                                .get_block_color(FaceOrientation::Right(Color::Red).index(), i, 0),
+                                .get_block_color(FaceOrientation::Right(Color::Red).ordinal(), i, 0),
                         );
                         self.cube.set_block_color(
-                            FaceOrientation::Right(Color::Red).index(),
+                            FaceOrientation::Right(Color::Red).ordinal(),
                             i,
                             0,
                             self.cube
-                                .get_block_color(FaceOrientation::Down(Color::Yellow).index(), 0, 2 - i),
+                                .get_block_color(FaceOrientation::Down(Color::Yellow).ordinal(), 0, 2 - i),
                         );
                         self.cube.set_block_color(
-                            FaceOrientation::Down(Color::Yellow).index(),
+                            FaceOrientation::Down(Color::Yellow).ordinal(),
                             0,
                             2 - i,
                             self.cube
-                                .get_block_color(FaceOrientation::Left(Color::Orange).index(), 2 - i, 2),
+                                .get_block_color(FaceOrientation::Left(Color::Orange).ordinal(), 2 - i, 2),
                         );
                         self.cube.set_block_color(
-                            FaceOrientation::Left(Color::Orange).index(),
+                            FaceOrientation::Left(Color::Orange).ordinal(),
                             2 - i,
                             2,
                             temp[i],
@@ -246,35 +246,35 @@ impl<'a> CubeScrambler<'a> {
                 for i in 0..3 {
                     temp[i] = self
                         .cube
-                        .get_block_color(FaceOrientation::Up(Color::White).index(), 0, i);
+                        .get_block_color(FaceOrientation::Up(Color::White).ordinal(), 0, i);
                 }
 
                 if direction == TwistDirection::Clockwise {
                     // 上 <- 右 <- 下 <- 左 <- 上
                     for i in 0..3 {
                         self.cube.set_block_color(
-                            FaceOrientation::Up(Color::White).index(),
+                            FaceOrientation::Up(Color::White).ordinal(),
                             0,
                             i,
                             self.cube
-                                .get_block_color(FaceOrientation::Right(Color::Red).index(), i, 2),
+                                .get_block_color(FaceOrientation::Right(Color::Red).ordinal(), i, 2),
                         );
                         self.cube.set_block_color(
-                            FaceOrientation::Right(Color::Red).index(),
+                            FaceOrientation::Right(Color::Red).ordinal(),
                             i,
                             2,
                             self.cube
-                                .get_block_color(FaceOrientation::Down(Color::Yellow).index(), 2, 2 - i),
+                                .get_block_color(FaceOrientation::Down(Color::Yellow).ordinal(), 2, 2 - i),
                         );
                         self.cube.set_block_color(
-                            FaceOrientation::Down(Color::Yellow).index(),
+                            FaceOrientation::Down(Color::Yellow).ordinal(),
                             2,
                             2 - i,
                             self.cube
-                                .get_block_color(FaceOrientation::Left(Color::Orange).index(), 2 - i, 0),
+                                .get_block_color(FaceOrientation::Left(Color::Orange).ordinal(), 2 - i, 0),
                         );
                         self.cube.set_block_color(
-                            FaceOrientation::Left(Color::Orange).index(),
+                            FaceOrientation::Left(Color::Orange).ordinal(),
                             2 - i,
                             0,
                             temp[i],
@@ -284,28 +284,28 @@ impl<'a> CubeScrambler<'a> {
                     // 上 -> 右 -> 下 -> 左 -> 上
                     for i in 0..3 {
                         self.cube.set_block_color(
-                            FaceOrientation::Up(Color::White).index(),
+                            FaceOrientation::Up(Color::White).ordinal(),
                             0,
                             i,
                             self.cube
-                                .get_block_color(FaceOrientation::Left(Color::Orange).index(), 2 - i, 0),
+                                .get_block_color(FaceOrientation::Left(Color::Orange).ordinal(), 2 - i, 0),
                         );
                         self.cube.set_block_color(
-                            FaceOrientation::Left(Color::Orange).index(),
+                            FaceOrientation::Left(Color::Orange).ordinal(),
                             2 - i,
                             0,
                             self.cube
-                                .get_block_color(FaceOrientation::Down(Color::Yellow).index(), 2, 2 - i),
+                                .get_block_color(FaceOrientation::Down(Color::Yellow).ordinal(), 2, 2 - i),
                         );
                         self.cube.set_block_color(
-                            FaceOrientation::Down(Color::Yellow).index(),
+                            FaceOrientation::Down(Color::Yellow).ordinal(),
                             2,
                             2 - i,
                             self.cube
-                                .get_block_color(FaceOrientation::Right(Color::Red).index(), i, 2),
+                                .get_block_color(FaceOrientation::Right(Color::Red).ordinal(), i, 2),
                         );
                         self.cube.set_block_color(
-                            FaceOrientation::Right(Color::Red).index(),
+                            FaceOrientation::Right(Color::Red).ordinal(),
                             i,
                             2,
                             temp[i],
@@ -318,35 +318,35 @@ impl<'a> CubeScrambler<'a> {
                 for i in 0..3 {
                     temp[i] = self
                         .cube
-                        .get_block_color(FaceOrientation::Up(Color::White).index(), i, 0);
+                        .get_block_color(FaceOrientation::Up(Color::White).ordinal(), i, 0);
                 }
 
                 if direction == TwistDirection::Clockwise {
                     // 上 -> 前 -> 下 -> 后 -> 上
                     for i in 0..3 {
                         self.cube.set_block_color(
-                            FaceOrientation::Up(Color::White).index(),
+                            FaceOrientation::Up(Color::White).ordinal(),
                             i,
                             0,
                             self.cube
-                                .get_block_color(FaceOrientation::Back(Color::Green).index(), 2 - i, 2),
+                                .get_block_color(FaceOrientation::Back(Color::Green).ordinal(), 2 - i, 2),
                         );
                         self.cube.set_block_color(
-                            FaceOrientation::Back(Color::Green).index(),
+                            FaceOrientation::Back(Color::Green).ordinal(),
                             2 - i,
                             2,
                             self.cube
-                                .get_block_color(FaceOrientation::Down(Color::Yellow).index(), i, 0),
+                                .get_block_color(FaceOrientation::Down(Color::Yellow).ordinal(), i, 0),
                         );
                         self.cube.set_block_color(
-                            FaceOrientation::Down(Color::Yellow).index(),
+                            FaceOrientation::Down(Color::Yellow).ordinal(),
                             i,
                             0,
                             self.cube
-                                .get_block_color(FaceOrientation::Front(Color::Blue).index(), i, 0),
+                                .get_block_color(FaceOrientation::Front(Color::Blue).ordinal(), i, 0),
                         );
                         self.cube.set_block_color(
-                            FaceOrientation::Front(Color::Blue).index(),
+                            FaceOrientation::Front(Color::Blue).ordinal(),
                             i,
                             0,
                             temp[i],
@@ -356,28 +356,28 @@ impl<'a> CubeScrambler<'a> {
                     // 上 <- 前 <- 下 <- 后 <- 上
                     for i in 0..3 {
                         self.cube.set_block_color(
-                            FaceOrientation::Up(Color::White).index(),
+                            FaceOrientation::Up(Color::White).ordinal(),
                             i,
                             0,
                             self.cube
-                                .get_block_color(FaceOrientation::Front(Color::Blue).index(), i, 0),
+                                .get_block_color(FaceOrientation::Front(Color::Blue).ordinal(), i, 0),
                         );
                         self.cube.set_block_color(
-                            FaceOrientation::Front(Color::Blue).index(),
+                            FaceOrientation::Front(Color::Blue).ordinal(),
                             i,
                             0,
                             self.cube
-                                .get_block_color(FaceOrientation::Down(Color::Yellow).index(), i, 0),
+                                .get_block_color(FaceOrientation::Down(Color::Yellow).ordinal(), i, 0),
                         );
                         self.cube.set_block_color(
-                            FaceOrientation::Down(Color::Yellow).index(),
+                            FaceOrientation::Down(Color::Yellow).ordinal(),
                             i,
                             0,
                             self.cube
-                                .get_block_color(FaceOrientation::Back(Color::Green).index(), 2 - i, 2),
+                                .get_block_color(FaceOrientation::Back(Color::Green).ordinal(), 2 - i, 2),
                         );
                         self.cube.set_block_color(
-                            FaceOrientation::Back(Color::Green).index(),
+                            FaceOrientation::Back(Color::Green).ordinal(),
                             2 - i,
                             2,
                             temp[i],
@@ -390,35 +390,35 @@ impl<'a> CubeScrambler<'a> {
                 for i in 0..3 {
                     temp[i] = self
                         .cube
-                        .get_block_color(FaceOrientation::Up(Color::White).index(), i, 2);
+                        .get_block_color(FaceOrientation::Up(Color::White).ordinal(), i, 2);
                 }
 
                 if direction == TwistDirection::Clockwise {
                     // 上 <- 前 <- 下 <- 后 <- 上
                     for i in 0..3 {
                         self.cube.set_block_color(
-                            FaceOrientation::Up(Color::White).index(),
+                            FaceOrientation::Up(Color::White).ordinal(),
                             i,
                             2,
                             self.cube
-                                .get_block_color(FaceOrientation::Front(Color::Blue).index(), i, 2),
+                                .get_block_color(FaceOrientation::Front(Color::Blue).ordinal(), i, 2),
                         );
                         self.cube.set_block_color(
-                            FaceOrientation::Front(Color::Blue).index(),
+                            FaceOrientation::Front(Color::Blue).ordinal(),
                             i,
                             2,
                             self.cube
-                                .get_block_color(FaceOrientation::Down(Color::Yellow).index(), i, 2),
+                                .get_block_color(FaceOrientation::Down(Color::Yellow).ordinal(), i, 2),
                         );
                         self.cube.set_block_color(
-                            FaceOrientation::Down(Color::Yellow).index(),
+                            FaceOrientation::Down(Color::Yellow).ordinal(),
                             i,
                             2,
                             self.cube
-                                .get_block_color(FaceOrientation::Back(Color::Green).index(), 2 - i, 0),
+                                .get_block_color(FaceOrientation::Back(Color::Green).ordinal(), 2 - i, 0),
                         );
                         self.cube.set_block_color(
-                            FaceOrientation::Back(Color::Green).index(),
+                            FaceOrientation::Back(Color::Green).ordinal(),
                             2 - i,
                             0,
                             temp[i],
@@ -428,28 +428,28 @@ impl<'a> CubeScrambler<'a> {
                     // 上 -> 前 -> 下 -> 后 -> 上
                     for i in 0..3 {
                         self.cube.set_block_color(
-                            FaceOrientation::Up(Color::White).index(),
+                            FaceOrientation::Up(Color::White).ordinal(),
                             i,
                             2,
                             self.cube
-                                .get_block_color(FaceOrientation::Back(Color::Green).index(), 2 - i, 0),
+                                .get_block_color(FaceOrientation::Back(Color::Green).ordinal(), 2 - i, 0),
                         );
                         self.cube.set_block_color(
-                            FaceOrientation::Back(Color::Green).index(),
+                            FaceOrientation::Back(Color::Green).ordinal(),
                             2 - i,
                             0,
                             self.cube
-                                .get_block_color(FaceOrientation::Down(Color::Yellow).index(), i, 2),
+                                .get_block_color(FaceOrientation::Down(Color::Yellow).ordinal(), i, 2),
                         );
                         self.cube.set_block_color(
-                            FaceOrientation::Down(Color::Yellow).index(),
+                            FaceOrientation::Down(Color::Yellow).ordinal(),
                             i,
                             2,
                             self.cube
-                                .get_block_color(FaceOrientation::Front(Color::Blue).index(), i, 2),
+                                .get_block_color(FaceOrientation::Front(Color::Blue).ordinal(), i, 2),
                         );
                         self.cube.set_block_color(
-                            FaceOrientation::Front(Color::Blue).index(),
+                            FaceOrientation::Front(Color::Blue).ordinal(),
                             i,
                             2,
                             temp[i],
