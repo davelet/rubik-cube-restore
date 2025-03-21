@@ -4,7 +4,7 @@ use cube::{
     face::{FaceOrientation, TwistDirection},
     Cube,
 };
-use shuffler::CubeShuffler;
+use shuffler::*;
 use utils::*;
 
 mod cube;
@@ -30,8 +30,8 @@ pub fn shuffle(state: [[[u8; 3]; 3]; 6], times: u32) -> [[[u8; 3]; 3]; 6] {
 pub fn turn(state: [[[u8; 3]; 3]; 6], face: u8, direction: bool) -> [[[u8; 3]; 3]; 6] {
     println!("turn param; face: {}, direction: {}", face, direction);
     let mut cube = u8_to_color_state(state);
-    let mut shuffler = CubeShuffler::new(&mut cube);
-    shuffler.rotate_face(
+    let mut shuffler = CubeScrambler::new(&mut cube);
+    shuffler.scramble(
         FaceOrientation::from_u8(face),
         if direction {
             TwistDirection::Clockwise

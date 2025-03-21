@@ -1,6 +1,13 @@
-use crate::rubiks::cube::{color::Color, face::FaceOrientation, Cube};
+use crate::rubiks::{cube::{color::Color, face::{FaceOrientation, TwistDirection}, Cube}, shuffler::CubeScrambler};
 
 use super::*;
+
+fn rotate(cube: &mut Cube, face: u8, direction: TwistDirection) {
+    let orientation = FaceOrientation::from_u8(face);
+
+    let mut shuffler = CubeScrambler::new(cube);
+    shuffler.scramble(orientation, direction);
+}
 
 pub struct BottomCrossSolver {
     pub cube: Cube,

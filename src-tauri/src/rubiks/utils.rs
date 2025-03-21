@@ -10,13 +10,13 @@ pub fn color_state_to_u8(cube: &Cube) -> [[[u8; 3]; 3]; 6] {
             }
         }
     }
-    println!("魔方状态数组:");
-    for face in 0..6 {
-        println!("面 {}:", face);
-        for row in 0..3 {
-            println!("{:?}", cube.state[face][row]);
-        }
-    }
+    // println!("魔方状态数组:");
+    // for face in 0..6 {
+    //     println!("面 {}:", face);
+    //     for row in 0..3 {
+    //         println!("{:?}", cube.state[face][row]);
+    //     }
+    // }
     result
 }
 

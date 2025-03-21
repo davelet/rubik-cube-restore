@@ -64,4 +64,14 @@ export default class TauriService {
       return this.createErrorResponse(error, '魔方旋转失败');
     }
   }
+
+    static async handleShuffle(params: { state: number[][][], times: number }): Promise<Response<number[][][]>> {
+    try {
+      const result = await invoke<number[][][]>('shuffle', params);
+      return this.createSuccessResponse(result);
+    } catch (error: unknown) {
+      return this.createErrorResponse(error, '魔方打乱失败');
+    }
+  }
+
 }

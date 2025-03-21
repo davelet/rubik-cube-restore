@@ -95,5 +95,16 @@ export const useCubeStore = defineStore('cube', {
       }
       return response;
     },
+    async handleShuffle(times: number) {
+      const params = {
+        state: this.cubeState as number[][][],
+        times
+      };
+      const response = await TauriService.handleShuffle(params);
+      if (response.success) {
+        this.cubeState = response.result;
+      }
+      return response;
+    },
   },
 })

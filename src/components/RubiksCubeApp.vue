@@ -9,7 +9,7 @@
     <RubiksCubeRotationControls @rotate="handleRotation" @reset="initCubeState" @debug-toggle="handleDebugToggle"
       @solve-panel-toggle="handleSolvePanelToggle" @solve-lower-layer="handleSolveLowerLayer"
       @solve-middle-layer="handleSolveMiddleLayer" @solve-upper-layer="handleSolveUpperLayer"
-      :showDebugMessages="showDebugMessages" />
+      :showDebugMessages="showDebugMessages" @shuffle="handleShuffle" />
     <div v-for="(cube, index) in cubes" :key="index" :style="cubeContainerStyle(cube)">
       <RubiksCubeSingleBack v-if="index === 0" :size="cube.size" :cubeState="cube.cubeState" />
       <RubiksCubeSingleRight v-if="index === 1" :size="cube.size" :cubeState="cube.cubeState" />
@@ -85,7 +85,10 @@ export default {
     handleDebugToggle(value) {
       this.showDebugMessages = value;
     },
-
+    async handleShuffle(times) {
+      const result = await this.store.handleShuffle(times);
+      this.handleApiResponse('shuffle', times, result);
+    },
     handleApiResponse(type, params, result, successMessage) {
       if (result.success) {
         this.$refs.apiMessage?.addMessage(

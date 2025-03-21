@@ -1,4 +1,4 @@
-use rand::Rng;
+use rand::{rngs::ThreadRng, Rng};
 
 use super::cube::{
     color::Color,
@@ -6,44 +6,16 @@ use super::cube::{
     Cube,
 };
 
-pub struct CubeShuffler<'a> {
+pub struct CubeScrambler<'a> {
     cube: &'a mut Cube,
-    rng: rand::rngs::ThreadRng,
 }
 
-impl<'a> CubeShuffler<'a> {
+impl<'a> CubeScrambler<'a> {
     pub fn new(cube: &'a mut Cube) -> Self {
-        CubeShuffler {
-            cube,
-            rng: rand::thread_rng(),
-        }
+        CubeScrambler { cube }
     }
 
-    pub fn shuffle(&mut self, times: u32) -> &Cube {
-        for _ in 0..times {
-            // 随机选择一个面
-            let face = self.random();
-            // 随机选择旋转方向
-            let clockwise = self.rng.gen_bool(0.5);
-            let twist_direction = if clockwise {
-                TwistDirection::Clockwise
-            } else {
-                TwistDirection::CounterClockwise
-            };
-
-            self.rotate_face(face, twist_direction);
-        }
-
-        &self.cube
-    }
-
-    fn random(&mut self) -> FaceOrientation {
-        let random_index = self.rng.gen_range(0..6);
-
-        FaceOrientation::from_u8(random_index as u8)
-    }
-
-    pub fn rotate_face(&mut self, face: FaceOrientation, direction: TwistDirection) {
+    pub fn scramble(&mut self, face: FaceOrientation, direction: TwistDirection) {
         // 保存当前面的状态
         let mut current_face = [[Color::White; 3]; 3];
         for i in 0..3 {
@@ -485,6 +457,47 @@ impl<'a> CubeShuffler<'a> {
                     }
                 }
             }
+        }
+    }
+}
+
+pub struct CubeShuffler<'a> {
+    scrambler: CubeScrambler<'a>,
+    rng: Option<ThreadRng>,
+}
+
+impl<'a> CubeShuffler<'a> {
+    pub fn new(cube: &'a mut Cube) -> Self {
+        CubeShuffler {
+            scrambler: CubeScrambler::new(cube),
+            rng: Some(rand::thread_rng()),
+        }
+    }
+
+    pub fn shuffle(&mut self, times: u32) {
+        for _ in 0..times {
+            // 随机选择一个面
+            let face = self.random_face();
+            // 随机选择旋转方向
+            let twist_direction = self.random_twist_direction();
+
+            self.scrambler.scramble(face, twist_direction);
+        }
+
+    }
+
+    fn random_face(&mut self) -> FaceOrientation {
+        let random_index = self.rng.as_mut().unwrap().gen_range(0..6);
+
+        FaceOrientation::from_u8(random_index as u8)
+    }
+
+    fn random_twist_direction(&mut self) -> TwistDirection {
+        let clockwise = self.rng.as_mut().unwrap().gen_bool(0.5);
+        if clockwise {
+            TwistDirection::Clockwise
+        } else {
+            TwistDirection::CounterClockwise
         }
     }
 }

@@ -26,6 +26,9 @@
         <button @click="handleRotation" class="rotate-button">执行旋转</button>
       </div>
     </div>
+    <div class="shuffle-control">
+      <button @click="handleShuffle" class="shuffle-button">随机打乱</button>
+    </div>
     <div class="solve-control">
       <button class="solve-btn" @click="toggleSolvePanel">层先法求解</button>
       
@@ -73,6 +76,9 @@ export default {
     },
     handleReset() {
       this.$emit('reset');
+    },
+    handleShuffle() {
+      this.$emit('shuffle', 20);
     },
     toggleDebug(event) {
       this.$emit('debug-toggle', event.target.checked);
@@ -256,5 +262,26 @@ input[type="radio"] {
 
 .step-btn:hover {
   background-color: #1976D2;
+}
+
+.shuffle-control {
+  margin: 4px 0;
+}
+
+.shuffle-button {
+  padding: 8px 16px;
+  background-color: #FF9800;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.shuffle-button:hover {
+  background-color: #F57C00;
+}
+
+.shuffle-button:active {
+  background-color: #EF6C00;
 }
 </style>
