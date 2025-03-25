@@ -77,6 +77,10 @@ pub struct BottomCrossSolver {
 }
 
 impl Solver for BottomCrossSolver {
+    fn cube(&self) -> Cube {
+        self.cube.clone()
+    }
+    
     fn target(&self) -> SolveTarget {
         SolveTarget::BottomCross
     }
@@ -371,6 +375,10 @@ pub struct BottomCornerSolver {
 }
 
 impl Solver for BottomCornerSolver {
+    fn cube(&self) -> Cube {
+        self.cube.clone()
+    }
+    
     fn target(&self) -> SolveTarget {
         SolveTarget::BottomCorner
     }
@@ -397,6 +405,9 @@ pub struct MiddleSolver {
 }
 
 impl Solver for MiddleSolver {
+    fn cube(&self) -> Cube {
+        self.cube.clone()
+    }
     fn target(&self) -> SolveTarget {
         SolveTarget::MiddleEdge
     }
@@ -423,6 +434,9 @@ pub struct TopCrossSolver {
 }
 
 impl Solver for TopCrossSolver {
+    fn cube(&self) -> Cube {
+        self.cube.clone()
+    }
     fn target(&self) -> SolveTarget {
         SolveTarget::TopCross
     }
@@ -449,6 +463,9 @@ pub struct TopFaceSolver {
 }
 
 impl Solver for TopFaceSolver {
+    fn cube(&self) -> Cube {
+        self.cube.clone()
+    }
     fn target(&self) -> SolveTarget {
         SolveTarget::TopFace
     }
@@ -475,6 +492,9 @@ pub struct TopEdgeSolver {
 }
 
 impl Solver for TopEdgeSolver {
+    fn cube(&self) -> Cube {
+        self.cube.clone()
+    }
     fn target(&self) -> SolveTarget {
         SolveTarget::TopEdge
     }
@@ -501,6 +521,9 @@ pub struct TopCornerSolver {
 }
 
 impl Solver for TopCornerSolver {
+    fn cube(&self) -> Cube {
+        self.cube.clone()
+    }
     fn target(&self) -> SolveTarget {
         SolveTarget::TopCorner
     }

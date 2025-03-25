@@ -44,8 +44,19 @@ pub fn turn(state: [[[u8; 3]; 3]; 6], face: u8, direction: bool) -> [[[u8; 3]; 3
 }
 
 #[tauri::command]
-pub fn solve(state: [[[u8; 3]; 3]; 6], target: u8) -> Vec<char> {
-    let cube = u8_to_color_state(state);
+pub fn solve(state: [[[u8; 3]; 3]; 6], target: u8) -> SolveSolution {
+    let mut cube = u8_to_color_state(state);
     let target = solver::SolveTarget::from_u8(target);
-    execute(cube, target)
+    let result = execute(&mut cube, target);
+    println!("cube after solve: {:?}", cube);
+    SolveSolution {
+        seq: result.0,
+        cube: color_state_to_u8(&result.1),
+    }
+}
+
+#[derive(serde::Serialize)]
+pub struct SolveSolution {
+    seq: Vec<char>,
+    cube: [[[u8; 3]; 3]; 6],
 }

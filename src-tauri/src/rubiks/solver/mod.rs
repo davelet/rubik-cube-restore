@@ -41,13 +41,13 @@ impl SolveTarget {
     }
 }
 
-pub fn execute(cube: Cube, target: SolveTarget) -> Vec<char> {
+pub fn execute(cube: &mut Cube, target: SolveTarget) -> (Vec<char>, Cube) {
     if cube.is_solved() {
-        return vec![];
+        return (vec![], cube.clone());
     }
 
     let mut seq = vec![];
-    let first_solver = BottomCrossSolver { cube };
+    let first_solver = BottomCrossSolver { cube: cube.clone() };
     let mut solver = SolverEnum::BottomCross(Rc::new(RefCell::new(Box::new(first_solver))));
 
     loop {
@@ -64,7 +64,8 @@ pub fn execute(cube: Cube, target: SolveTarget) -> Vec<char> {
             None => break,
         };
     }
-    seq
+    let cube = solver.cube();
+    (seq, cube)
 }
 
 #[derive(Clone)]
@@ -79,6 +80,17 @@ pub enum SolverEnum {
 }
 
 impl Solver for SolverEnum {
+    fn cube(&self) -> Cube {
+        match self {
+            SolverEnum::BottomCross(ref_cell) => ref_cell.borrow().cube(),
+            SolverEnum::BottomCorner(ref_cell) => ref_cell.borrow().cube(),
+            SolverEnum::MiddleEdge(ref_cell) => ref_cell.borrow().cube(),
+            SolverEnum::TopCross(ref_cell) => ref_cell.borrow().cube(),
+            SolverEnum::TopFace(ref_cell) => ref_cell.borrow().cube(),
+            SolverEnum::TopEdge(ref_cell) => ref_cell.borrow().cube(),
+            SolverEnum::TopCorner(ref_cell) => ref_cell.borrow().cube(),
+        }
+    }
     fn target(&self) -> SolveTarget {
         match self {
             SolverEnum::BottomCross(ref_cell) => ref_cell.borrow_mut().target(),
@@ -136,6 +148,8 @@ pub trait Solver {
     fn is_target_solved(&self) -> bool;
 
     fn next_solver(&self) -> Option<SolverEnum>;
+
+    fn cube(&self) -> Cube;
 }
 
 #[cfg(test)]
@@ -150,7 +164,8 @@ mod tests {
         let mut shuffler = CubeShuffler::new(&mut cube);
         shuffler.shuffle(20);
         println!("cube is {:?}", cube);
-        let seq = execute(cube, SolveTarget::BottomCross);
-        println!("{:?}", seq);
+        let seq = execute(&mut cube, SolveTarget::BottomCross);
+        println!("执行完成后的魔方状态: {:?}", cube);
+        println!("解决方案序列: {:?}", seq);
     }
 }
