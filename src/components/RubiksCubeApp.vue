@@ -7,8 +7,7 @@
       <div class="axis z-axis"></div>
     </div>
     <RubiksCubeRotationControls @rotate="handleRotation" @reset="initCubeState" @debug-toggle="handleDebugToggle"
-      @solve-panel-toggle="handleSolvePanelToggle" @solve-lower-layer="handleSolveLowerLayer"
-      @solve-middle-layer="handleSolveMiddleLayer" @solve-upper-layer="handleSolveUpperLayer"
+      @solve-panel-toggle="handleSolvePanelToggle" @solve="handleSolve"
       :showDebugMessages="showDebugMessages" @shuffle="handleShuffle" />
     <div v-for="(cube, index) in cubes" :key="index" :style="cubeContainerStyle(cube)">
       <RubiksCubeSingleBack v-if="index === 0" :size="cube.size" :cubeState="cube.cubeState" />
@@ -45,7 +44,7 @@ export default {
   setup() {
     const store = useCubeStore();
     const cubeSize = store.cubeSize;
-    const PANEL_SIZE = 200; // 面板展开/收起时的尺寸变化值
+    const PANEL_SIZE = 0; // 面板展开/收起时的尺寸变化值
     return { store, cubeSize, PANEL_SIZE };
   },
 
@@ -113,12 +112,12 @@ export default {
         const { result: { width, height } } = await TauriService.getWindowSize();
         if (isOpen) {
           await TauriService.resizeWindow({
-            height: height + this.PANEL_SIZE,
+            height: height + this.PANEL_SIZE * 4,
             width: width + this.PANEL_SIZE
           });
         } else {
           await TauriService.resizeWindow({
-            height: height - this.PANEL_SIZE,
+            height: height - this.PANEL_SIZE * 4,
             width: width - this.PANEL_SIZE
           });
         }
@@ -130,38 +129,25 @@ export default {
       }
     },
 
-    async handleSolveLowerLayer() {
-      try {
-        const result = await TauriService.solveLayer('lower');
-        this.handleApiResponse('solve_lower_layer', null, result, '底层求解完成');
-      } catch (error) {
-        this.handleApiResponse('solve_lower_layer', null, {
-          success: false,
-          error: '底层求解失败'
-        });
-      }
-    },
+    async handleSolve(step) {
+      const stepMap = {
+        'lower-cross': { target: 'BottomCross', message: '底层十字' },
+        'lower-corners': { target: 'BottomCorner', message: '底层角块' },
+        'middle-layer': { target: 'MiddleEdge', message: '中层' },
+        'upper-cross': { target: 'TopCross', message: '顶层十字' },
+        'upper-face': { target: 'TopFace', message: '顶面' },
+        'upper-edges': { target: 'TopEdge', message: '顶棱' },
+        'upper-corners': { target: 'TopCorner', message: '顶角' }
+      };
 
-    async handleSolveMiddleLayer() {
+      const { target, message } = stepMap[step];
       try {
-        const result = await TauriService.solveLayer('middle');
-        this.handleApiResponse('solve_middle_layer', null, result, '中层求解完成');
+        const result = await this.store.solveLayer({ target });
+        this.handleApiResponse(`solve_${step}`, null, result, `${message}求解完成`);
       } catch (error) {
-        this.handleApiResponse('solve_middle_layer', null, {
+        this.handleApiResponse(`solve_${step}`, null, {
           success: false,
-          error: '中层求解失败'
-        });
-      }
-    },
-
-    async handleSolveUpperLayer() {
-      try {
-        const result = await TauriService.solveLayer('upper');
-        this.handleApiResponse('solve_upper_layer', null, result, '顶层求解完成');
-      } catch (error) {
-        this.handleApiResponse('solve_upper_layer', null, {
-          success: false,
-          error: '顶层求解失败'
+          error: `${message}求解失败`
         });
       }
     },

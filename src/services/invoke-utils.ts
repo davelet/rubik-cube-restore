@@ -29,12 +29,12 @@ export default class TauriService {
     }
   }
 
-  static async solveLayer(layer: string): Promise<Response<string>> {
+  static async solveLayer(params: { state: number[][][], target: number }): Promise<Response<string[]>> {
     try {
-      await invoke(`solve_${layer}_layer`);
-      return this.createSuccessResponse(`${layer}层求解完成`);
+      const steps = await invoke<string[]>('solve', params);
+      return this.createSuccessResponse(steps);
     } catch (error: unknown) {
-      return this.createErrorResponse(error, `${layer}层求解失败`);
+      return this.createErrorResponse(error, `${params.target}求解失败`);
     }
   }
 

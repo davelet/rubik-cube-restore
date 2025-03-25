@@ -1,6 +1,6 @@
 <template>
   <div class="controls-container">
-    <div class="rotation-controls">
+    <div class="rotation-controls" :class="{ 'hidden': showSolvePanel }">
       <div class="control-group">
         <label for="face-select">选择面：</label>
         <select id="face-select" v-model="selectedFace">
@@ -26,19 +26,25 @@
         <button @click="handleRotation" class="rotate-button">执行旋转</button>
       </div>
     </div>
-    <div class="shuffle-control">
-      <button @click="handleShuffle" class="shuffle-button">随机打乱</button>
-    </div>
     <div class="solve-control">
       <button class="solve-btn" @click="toggleSolvePanel">层先法求解</button>
-      
+
       <div class="solve-steps" v-show="showSolvePanel">
-        <button class="step-btn" @click="solveLowerLayer">底层求解</button>
+        <div class="solve-group bottom-layer">
+          <button class="step-btn" @click="solveLowerCross">底层十字</button>
+          <button class="step-btn" @click="solveLowerCorners">底层角块</button>
+        </div>
         <button class="step-btn" @click="solveMiddleLayer">中层求解</button>
-        <button class="step-btn" @click="solveUpperLayer">顶层求解</button>
+        <div class="solve-group top-layer">
+          <button class="step-btn" @click="solveUpperCross">十字</button>
+          <button class="step-btn" @click="solveUpperFace">顶面</button>
+          <button class="step-btn" @click="solveUpperEdges">顶棱</button>
+          <button class="step-btn" @click="solveUpperCorners">顶角</button>
+        </div>
       </div>
     </div>
-    <div class="reset-control">
+    <div class="shuffle-reset-container">
+      <button @click="handleShuffle" class="shuffle-button">随机打乱</button>
       <button @click="handleReset" class="reset-button">初始化</button>
     </div>
     <div class="debug-control">
@@ -85,17 +91,28 @@ export default {
     },
     async toggleSolvePanel() {
       this.showSolvePanel = !this.showSolvePanel;
-      // 发送事件给父组件处理窗口大小调整
       this.$emit('solve-panel-toggle', this.showSolvePanel);
     },
-    solveLowerLayer() {
-      this.$emit('solve-lower-layer');
+    solveLowerCross() {
+      this.$emit('solve', 'lower-cross');
+    },
+    solveLowerCorners() {
+      this.$emit('solve', 'lower-corners');
     },
     solveMiddleLayer() {
-      this.$emit('solve-middle-layer');
+      this.$emit('solve', 'middle-layer');
     },
-    solveUpperLayer() {
-      this.$emit('solve-upper-layer');
+    solveUpperCross() {
+      this.$emit('solve', 'upper-cross');
+    },
+    solveUpperFace() {
+      this.$emit('solve', 'upper-face');
+    },
+    solveUpperEdges() {
+      this.$emit('solve', 'upper-edges');
+    },
+    solveUpperCorners() {
+      this.$emit('solve', 'upper-corners');
     }
   }
 }
@@ -108,9 +125,7 @@ export default {
   right: 20px;
   display: flex;
   flex-direction: column;
-  /* Align items vertically */
   align-items: flex-end;
-  /* Align to the right */
 }
 
 .controls-container {
@@ -124,6 +139,18 @@ export default {
   border: 1px solid #ddd;
   margin-bottom: 0;
   padding: 15px;
+  transition: opacity 0.3s ease-in-out, max-height 0.3s ease-in-out;
+  opacity: 1;
+  max-height: 500px;
+  overflow: hidden;
+}
+
+.rotation-controls.hidden {
+  opacity: 0;
+  max-height: 0;
+  padding: 0;
+  margin: 0;
+  border: none;
 }
 
 .reset-control {
@@ -168,8 +195,7 @@ input[type="radio"] {
   margin: 0;
 }
 
-.rotate-button,
-.reset-button {
+.rotate-button {
   width: 100%;
   padding: 10px;
   color: white;
@@ -184,24 +210,12 @@ input[type="radio"] {
   background-color: #4CAF50;
 }
 
-.reset-button {
-  background-color: #f44336;
-}
-
 .rotate-button:hover {
   background-color: #45a049;
 }
 
-.reset-button:hover {
-  background-color: #da190b;
-}
-
 .rotate-button:active {
   background-color: #3d8b40;
-}
-
-.reset-button:active {
-  background-color: #c41810;
 }
 
 .debug-control {
@@ -264,17 +278,33 @@ input[type="radio"] {
   background-color: #1976D2;
 }
 
-.shuffle-control {
-  margin: 4px 0;
+.shuffle-reset-container {
+  display: flex;
+  gap: 15px;
+  margin: 0px 0;
+  width: 100%;
 }
 
-.shuffle-button {
-  padding: 8px 16px;
-  background-color: #FF9800;
+.shuffle-button,
+.reset-button {
+  padding: 4px;
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  font-size: 15px;
+}
+
+.shuffle-button {
+  width: 55%;
+}
+
+.reset-button {
+  width: 45%;
+}
+
+.shuffle-button {
+  background-color: #FF9800;
 }
 
 .shuffle-button:hover {
@@ -283,5 +313,28 @@ input[type="radio"] {
 
 .shuffle-button:active {
   background-color: #EF6C00;
+}
+
+.reset-button {
+  background-color: #f44336;
+}
+
+.reset-button:hover {
+  background-color: #da190b;
+}
+
+.reset-button:active {
+  background-color: #c41810;
+}
+
+.solve-group {
+  border: 1px solid #ddd;
+  padding: 8px;
+  border-radius: 4px;
+  margin: 8px 0;
+}
+
+.solve-group button {
+  margin: 4px 1px;
 }
 </style>

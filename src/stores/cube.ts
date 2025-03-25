@@ -106,5 +106,14 @@ export const useCubeStore = defineStore('cube', {
       }
       return response;
     },
+
+    async solveLayer(target: number) {
+      const params = {
+        state: this.cubeState as number[][][],
+        target
+      };
+      const response = await TauriService.solveLayer(params);
+      return response;
+    },
   },
 })
