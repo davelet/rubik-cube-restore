@@ -113,6 +113,11 @@ export const useCubeStore = defineStore('cube', {
         target
       };
       const response = await TauriService.solveLayer(params);
+      if (response.success) {
+        if (response.result && 'cube' in response.result) {
+          this.cubeState = response.result.cube;
+        }
+      }
       return response;
     },
   },

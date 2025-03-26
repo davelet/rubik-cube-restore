@@ -7,8 +7,8 @@
       <div class="axis z-axis"></div>
     </div>
     <RubiksCubeRotationControls @rotate="handleRotation" @reset="initCubeState" @debug-toggle="handleDebugToggle"
-      @solve-panel-toggle="handleSolvePanelToggle" @solve="handleSolve"
-      :showDebugMessages="showDebugMessages" @shuffle="handleShuffle" />
+      @solve-panel-toggle="handleSolvePanelToggle" @solve="handleSolve" :showDebugMessages="showDebugMessages"
+      @shuffle="handleShuffle" />
     <div v-for="(cube, index) in cubes" :key="index" :style="cubeContainerStyle(cube)">
       <RubiksCubeSingleBack v-if="index === 0" :size="cube.size" :cubeState="cube.cubeState" />
       <RubiksCubeSingleRight v-if="index === 1" :size="cube.size" :cubeState="cube.cubeState" />
@@ -131,19 +131,19 @@ export default {
 
     async handleSolve(step) {
       const stepMap = {
-        'lower-cross': { target: 'BottomCross', message: '底层十字' },
-        'lower-corners': { target: 'BottomCorner', message: '底层角块' },
-        'middle-layer': { target: 'MiddleEdge', message: '中层' },
-        'upper-cross': { target: 'TopCross', message: '顶层十字' },
-        'upper-face': { target: 'TopFace', message: '顶面' },
-        'upper-edges': { target: 'TopEdge', message: '顶棱' },
-        'upper-corners': { target: 'TopCorner', message: '顶角' }
+        'lower-cross': { target: 0, message: '底层十字' },
+        'lower-corners': { target: 1, message: '底层角块' },
+        'middle-layer': { target: 2, message: '中层' },
+        'upper-cross': { target: 3, message: '顶层十字' },
+        'upper-face': { target: 4, message: '顶面' },
+        'upper-edges': { target: 5, message: '顶棱' },
+        'upper-corners': { target: 6, message: '顶角' }
       };
 
       const { target, message } = stepMap[step];
       try {
-        const result = await this.store.solveLayer({ target });
-        this.handleApiResponse(`solve_${step}`, null, result, `${message}求解完成`);
+        const result = await this.store.solveLayer(target);
+        this.handleApiResponse(`solve_${step}`, step, result, null);
       } catch (error) {
         this.handleApiResponse(`solve_${step}`, null, {
           success: false,

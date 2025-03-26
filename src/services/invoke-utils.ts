@@ -29,9 +29,9 @@ export default class TauriService {
     }
   }
 
-  static async solveLayer(params: { state: number[][][], target: number }): Promise<Response<string[]>> {
+  static async solveLayer(params: { state: number[][][], target: number }): Promise<Response<{seq: String[], cube: number[][][]}>> {
     try {
-      const steps = await invoke<string[]>('solve', params);
+      const steps = await invoke<{seq: String[], cube: number[][][]}>('solve', params);
       return this.createSuccessResponse(steps);
     } catch (error: unknown) {
       return this.createErrorResponse(error, `${params.target}求解失败`);
