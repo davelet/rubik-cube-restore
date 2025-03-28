@@ -1,6 +1,6 @@
 use super::color::Color;
 
-#[derive(PartialEq, Debug, Clone, Copy)]
+#[derive(PartialEq, Eq, Debug, Clone, Copy)]
 #[repr(u8)]
 pub enum FaceOrientation {
     Up(Color),
