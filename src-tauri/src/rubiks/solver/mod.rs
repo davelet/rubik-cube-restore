@@ -1,6 +1,6 @@
-use layer_solvers::*;
+pub use layer_solvers::*;
 
-use super::cube::Cube;
+pub use super::cube::Cube;
 
 mod layer_solvers;
 

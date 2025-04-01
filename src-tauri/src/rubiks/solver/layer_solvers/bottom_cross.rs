@@ -1,12 +1,4 @@
-use crate::rubiks::cube::{
-        color::Color,
-        face::FaceOrientation,
-        Cube,
-    };
-
-use super::super::{Solver, SolverEnum};
-use super::bottom_corner::BottomCornerSolver;
-use super::utils::*;
+use super::prelude::*;
 
 pub struct BottomCrossSolver;
 

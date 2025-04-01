@@ -1,17 +1,10 @@
-use crate::rubiks::cube::{
-        color::Color,
-        face::FaceOrientation,
-        Cube,
-    };
+use super::prelude::*;
 
-use super::super::{Solver, SolverEnum};
-use super::middle_edge::MiddleSolver;
-use super::utils::*;
 pub struct BottomCornerSolver {}
 
 impl Solver for BottomCornerSolver {
-    fn target(&self) -> super::super::SolveTarget {
-        super::super::SolveTarget::BottomCorner
+    fn target(&self) -> SolveTarget {
+        SolveTarget::BottomCorner
     }
 
     fn solve_target(&mut self, cube: &mut Cube) -> Vec<char> {
@@ -82,7 +75,7 @@ impl BottomCornerSolver {
                 Self::extract_corner(cube, face, steps);
                 row0 = 2 - row;
             }
-            Self::align_corner(cube, face, row0, col, steps);
+            Self::align_corner(cube, row0, col, steps);
         }
     }
 
@@ -100,13 +93,7 @@ impl BottomCornerSolver {
         rotate_and_record(cube, FaceOrientation::Up(Color::Yellow), false, steps);
     }
 
-    fn align_corner(
-        cube: &mut Cube,
-        face: FaceOrientation,
-        row: usize,
-        col: usize,
-        steps: &mut Vec<char>,
-    ) {
+    fn align_corner(cube: &mut Cube, row: usize, col: usize, steps: &mut Vec<char>) {
         let mut current_row = row;
         let mut current_col = col;
 
@@ -127,7 +114,8 @@ impl BottomCornerSolver {
 
     fn is_corner_aligned(cube: &Cube, row: usize, col: usize) -> bool {
         let colors = Self::get_corner_colors(cube, FaceOrientation::Up(Color::Yellow), row, col);
-        let center_color = cube.get_block_color(FaceOrientation::Front(Color::Blue).ordinal(), 1, 1);
+        let center_color =
+            cube.get_block_color(FaceOrientation::Front(Color::Blue).ordinal(), 1, 1);
         colors.0 == center_color || colors.1 == center_color || colors.2 == center_color
     }
 

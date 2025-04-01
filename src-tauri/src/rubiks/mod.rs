@@ -1,17 +1,22 @@
 //! Rubik's Cube implementation module
 
-use cube::{
-    face::{FaceOrientation, TwistDirection},
-    Cube,
-};
-use shuffler::*;
-use solver::execute;
-use utils::*;
+use prelude::*;
 
 mod cube;
 mod shuffler;
 mod solver;
 mod utils;
+
+mod prelude {
+    pub use super::cube::{
+        color::Color,
+        face::{FaceOrientation, TwistDirection},
+        Cube,
+    };
+    pub use super::shuffler::*;
+    pub use super::solver::{execute, SolveTarget};
+    pub use super::utils::*;
+}
 
 #[tauri::command]
 pub fn init_get_get_state() -> [[[u8; 3]; 3]; 6] {
