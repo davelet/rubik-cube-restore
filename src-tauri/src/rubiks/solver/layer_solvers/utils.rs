@@ -5,6 +5,7 @@ use crate::rubiks::{
         Cube,
     },
     shuffler::CubeScrambler,
+    utils::print_cube,
 };
 
 pub fn rotate_and_record(
@@ -68,6 +69,9 @@ pub fn rotate_and_record(
         }
     };
     steps.push(step);
+
+    println!("\nrotate_and_record: {:?}", step);
+    print_cube(cube);
 }
 
 pub fn get_up_center(face: FaceOrientation) -> (usize, usize) {

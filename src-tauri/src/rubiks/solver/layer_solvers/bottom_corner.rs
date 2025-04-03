@@ -1,6 +1,6 @@
 use super::prelude::*;
 
-pub struct BottomCornerSolver {}
+pub struct BottomCornerSolver;
 
 impl Solver for BottomCornerSolver {
     fn target(&self) -> SolveTarget {
@@ -10,20 +10,19 @@ impl Solver for BottomCornerSolver {
     fn solve_target(&mut self, cube: &mut Cube) -> Vec<char> {
         let mut steps = vec![];
 
-        for _ in 0..4 {
-            // Check top layer corners
+        'l: for _ in 0..4 {
             let top_face = FaceOrientation::Up(Color::Yellow);
-            Self::check_and_solve_corner(cube, top_face, 0, 0, &mut steps);
-            Self::check_and_solve_corner(cube, top_face, 0, 2, &mut steps);
-            Self::check_and_solve_corner(cube, top_face, 2, 0, &mut steps);
-            Self::check_and_solve_corner(cube, top_face, 2, 2, &mut steps);
-
-            // Check bottom layer corners
             let bottom_face = FaceOrientation::Down(Color::White);
-            Self::check_and_solve_corner(cube, bottom_face, 0, 0, &mut steps);
-            Self::check_and_solve_corner(cube, bottom_face, 0, 2, &mut steps);
-            Self::check_and_solve_corner(cube, bottom_face, 2, 0, &mut steps);
-            Self::check_and_solve_corner(cube, bottom_face, 2, 2, &mut steps);
+            for i in [0, 2].iter() {
+                for j in [0, 2].iter() {
+                    if Self::check_and_solve_corner(cube, top_face, *i, *j, &mut steps) {
+                        continue 'l;
+                    }
+                    if Self::check_and_solve_corner(cube, bottom_face, *i, *j, &mut steps) {
+                        continue 'l;
+                    }
+                }
+            }
         }
 
         steps
@@ -68,24 +67,65 @@ impl BottomCornerSolver {
         row: usize,
         col: usize,
         steps: &mut Vec<char>,
-    ) {
-        if Self::is_white_corner(cube, face, row, col) {
+    ) -> bool {
+        if Self::is_white_corner_need_solve(cube, face, row, col) {
             let mut row0 = row;
             if face == FaceOrientation::Down(Color::White) {
-                Self::extract_corner(cube, face, steps);
+                Self::extract_corner(cube, row, col, steps);
                 row0 = 2 - row;
             }
-            Self::align_corner(cube, row0, col, steps);
+            Self::align_top_corner(cube, row0, col, steps);
+            return true;
+        }
+        false
+    }
+
+    fn is_white_corner_need_solve(
+        cube: &Cube,
+        face: FaceOrientation,
+        row: usize,
+        col: usize,
+    ) -> bool {
+        let colors = Self::get_corner_colors(cube, face, row, col);
+        let has_white =
+            colors.0 == Color::White || colors.1 == Color::White || colors.2 == Color::White;
+        if !has_white {
+            return false;
+        }
+
+        if let FaceOrientation::Down(_) = face {
+            return !Self::is_bottom_corner_done(cube, row, col);
+        }
+        return true;
+    }
+
+    fn is_bottom_corner_done(cube: &Cube, row: usize, col: usize) -> bool {
+        let colors = Self::get_corner_colors(cube, FaceOrientation::Down(Color::White), row, col);
+
+        // Check if white faces down
+        if colors.0 != Color::White {
+            return false;
+        }
+
+        // Get center colors of adjacent faces
+        let front_color = Color::Blue;
+        let right_color = Color::Red;
+        let back_color = Color::Green;
+        let left_color = Color::Orange;
+
+        // Check corner colors match with center colors
+        match (row, col) {
+            (0, 0) => colors.1 == front_color && colors.2 == left_color, // Left front corner
+            (0, 2) => colors.1 == front_color && colors.2 == right_color, // Right front corner
+            (2, 0) => colors.1 == back_color && colors.2 == left_color,  // Left back corner
+            (2, 2) => colors.1 == back_color && colors.2 == right_color, // Right back corner
+            _ => panic!("Invalid corner position"),
         }
     }
 
-    fn is_white_corner(cube: &Cube, face: FaceOrientation, row: usize, col: usize) -> bool {
-        let colors = Self::get_corner_colors(cube, face, row, col);
-        colors.0 == Color::White || colors.1 == Color::White || colors.2 == Color::White
-    }
-
-    fn extract_corner(cube: &mut Cube, face: FaceOrientation, steps: &mut Vec<char>) {
-        let right_face = get_right_side(face);
+    fn extract_corner(cube: &mut Cube, row: usize, col: usize, steps: &mut Vec<char>) {
+        let right_face =
+            Self::get_right_face_on_position(FaceOrientation::Down(Color::White), row, col);
 
         rotate_and_record(cube, right_face, true, steps);
         rotate_and_record(cube, FaceOrientation::Up(Color::Yellow), true, steps);
@@ -93,7 +133,7 @@ impl BottomCornerSolver {
         rotate_and_record(cube, FaceOrientation::Up(Color::Yellow), false, steps);
     }
 
-    fn align_corner(cube: &mut Cube, row: usize, col: usize, steps: &mut Vec<char>) {
+    fn align_top_corner(cube: &mut Cube, row: usize, col: usize, steps: &mut Vec<char>) {
         let mut current_row = row;
         let mut current_col = col;
 
@@ -113,17 +153,97 @@ impl BottomCornerSolver {
     }
 
     fn is_corner_aligned(cube: &Cube, row: usize, col: usize) -> bool {
-        let colors = Self::get_corner_colors(cube, FaceOrientation::Up(Color::Yellow), row, col);
-        let center_color =
-            cube.get_block_color(FaceOrientation::Front(Color::Blue).ordinal(), 1, 1);
-        colors.0 == center_color || colors.1 == center_color || colors.2 == center_color
+        let up_face = FaceOrientation::Up(Color::Yellow);
+        let colors = Self::get_corner_colors(cube, up_face, row, col);
+        let faces = Self::get_side_faces(up_face, row, col);
+        let center_colors = (
+            Color::White,
+            cube.get_block_color(faces.0.ordinal(), 1, 1),
+            cube.get_block_color(faces.1.ordinal(), 1, 1),
+        );
+        (colors.0 == center_colors.0 || colors.1 == center_colors.0 || colors.2 == center_colors.0)
+            && (colors.0 == center_colors.1
+                || colors.1 == center_colors.1
+                || colors.2 == center_colors.1)
+            && (colors.0 == center_colors.2
+                || colors.1 == center_colors.2
+                || colors.2 == center_colors.2)
     }
 
     fn insert_corner(cube: &mut Cube, row: usize, col: usize, steps: &mut Vec<char>) {
-        let right_face = get_right_side(FaceOrientation::Front(Color::Blue));
-        rotate_and_record(cube, right_face, true, steps);
-        rotate_and_record(cube, FaceOrientation::Up(Color::Yellow), true, steps);
-        rotate_and_record(cube, right_face, false, steps);
+        let right_face =
+            Self::get_right_face_on_position(FaceOrientation::Up(Color::Yellow), row, col);
+        let mut at_bottom = false;
+
+        for _ in 0..5 {
+            if at_bottom {
+                let bottom_row = 2 - row;
+                if Self::is_bottom_corner_done(cube, bottom_row, col) {
+                    break;
+                } else {
+                    rotate_and_record(cube, right_face, true, steps);
+                    rotate_and_record(cube, FaceOrientation::Up(Color::Yellow), true, steps);
+                    rotate_and_record(cube, right_face, false, steps);
+                    // rotate_and_record(cube, FaceOrientation::Up(Color::Yellow), false, steps);
+                }
+            } else {
+                rotate_and_record(cube, right_face, true, steps);
+                rotate_and_record(cube, FaceOrientation::Up(Color::Yellow), true, steps);
+                rotate_and_record(cube, right_face, false, steps);
+                at_bottom = true;
+            }
+        }
+    }
+
+    fn get_right_face_on_position(
+        face: FaceOrientation,
+        row: usize,
+        col: usize,
+    ) -> FaceOrientation {
+        let (face1, face2) = Self::get_side_faces(face, row, col);
+        if row == col {
+            if face == FaceOrientation::Up(Color::Yellow) {
+                face2
+            } else {
+                face1
+            }
+        } else {
+            if face == FaceOrientation::Up(Color::Yellow) {
+                face1
+            } else {
+                face2
+            }
+        }
+    }
+
+    fn get_side_faces(
+        face: FaceOrientation,
+        row: usize,
+        col: usize,
+    ) -> (FaceOrientation, FaceOrientation) {
+        match face {
+            FaceOrientation::Up(_) => {
+                let side1 = if row == 0 {
+                    FaceOrientation::Back(Color::Green)
+                } else if row == 2 {
+                    FaceOrientation::Front(Color::Blue)
+                } else {
+                    panic!("Invalid row for side faces");
+                };
+                let side2 = if col == 0 {
+                    FaceOrientation::Left(Color::Orange)
+                } else if col == 2 {
+                    FaceOrientation::Right(Color::Red)
+                } else {
+                    panic!("Invalid column for side faces");
+                };
+                (side1, side2)
+            }
+            FaceOrientation::Down(_) => {
+                Self::get_side_faces(FaceOrientation::Up(Color::Yellow), 2 - row, col)
+            }
+            _ => panic!("Invalid face orientation"),
+        }
     }
 
     fn get_corner_colors(
@@ -132,53 +252,28 @@ impl BottomCornerSolver {
         row: usize,
         col: usize,
     ) -> (Color, Color, Color) {
+        let (side1, side2) = Self::get_side_faces(face, row, col);
+        let face_color0 = cube.get_block_color(face.ordinal(), row, col);
         match face {
-            FaceOrientation::Up(_) => match (row, col) {
-                (0, 0) => (
-                    cube.get_block_color(face.ordinal(), 0, 0),
-                    cube.get_block_color(FaceOrientation::Back(Color::Green).ordinal(), 0, 2),
-                    cube.get_block_color(FaceOrientation::Left(Color::Orange).ordinal(), 0, 0),
-                ),
-                (0, 2) => (
-                    cube.get_block_color(face.ordinal(), 0, 2),
-                    cube.get_block_color(FaceOrientation::Back(Color::Green).ordinal(), 0, 0),
-                    cube.get_block_color(FaceOrientation::Right(Color::Red).ordinal(), 0, 2),
-                ),
-                (2, 0) => (
-                    cube.get_block_color(face.ordinal(), 2, 0),
-                    cube.get_block_color(FaceOrientation::Front(Color::Blue).ordinal(), 0, 0),
-                    cube.get_block_color(FaceOrientation::Left(Color::Orange).ordinal(), 0, 2),
-                ),
-                (2, 2) => (
-                    cube.get_block_color(face.ordinal(), 2, 2),
-                    cube.get_block_color(FaceOrientation::Front(Color::Blue).ordinal(), 0, 2),
-                    cube.get_block_color(FaceOrientation::Right(Color::Red).ordinal(), 0, 0),
-                ),
-                _ => panic!("Invalid corner position"),
-            },
-            FaceOrientation::Down(_) => match (row, col) {
-                (0, 0) => (
-                    cube.get_block_color(face.ordinal(), 0, 0),
-                    cube.get_block_color(FaceOrientation::Front(Color::Blue).ordinal(), 2, 0),
-                    cube.get_block_color(FaceOrientation::Left(Color::Orange).ordinal(), 2, 2),
-                ),
-                (0, 2) => (
-                    cube.get_block_color(face.ordinal(), 0, 2),
-                    cube.get_block_color(FaceOrientation::Front(Color::Blue).ordinal(), 2, 2),
-                    cube.get_block_color(FaceOrientation::Right(Color::Red).ordinal(), 2, 0),
-                ),
-                (2, 0) => (
-                    cube.get_block_color(face.ordinal(), 2, 0),
-                    cube.get_block_color(FaceOrientation::Back(Color::Green).ordinal(), 2, 2),
-                    cube.get_block_color(FaceOrientation::Left(Color::Orange).ordinal(), 2, 0),
-                ),
-                (2, 2) => (
-                    cube.get_block_color(face.ordinal(), 2, 2),
-                    cube.get_block_color(FaceOrientation::Back(Color::Green).ordinal(), 2, 0),
-                    cube.get_block_color(FaceOrientation::Right(Color::Red).ordinal(), 2, 2),
-                ),
-                _ => panic!("Invalid corner position"),
-            },
+            FaceOrientation::Up(_) => {
+                let i = 0;
+                let j = 2 - (col as isize - row as isize).abs() as usize;
+                let face_color1 = cube.get_block_color(side1.ordinal(), i, j);
+
+                let j = 2 - j;
+                let face_color2 = cube.get_block_color(side2.ordinal(), i, j);
+
+                (face_color0, face_color1, face_color2)
+            }
+            FaceOrientation::Down(_) => {
+                let i = 2;
+                let j = (row as isize - col as isize).abs() as usize;
+                let face_color1 = cube.get_block_color(side1.ordinal(), i, j);
+
+                let j = 2 - j;
+                let face_color2 = cube.get_block_color(side2.ordinal(), i, j);
+                (face_color0, face_color1, face_color2)
+            }
             _ => panic!("Invalid face orientation"),
         }
     }

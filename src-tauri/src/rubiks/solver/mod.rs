@@ -52,7 +52,9 @@ pub fn execute(cube: &mut Cube, target: SolveTarget) -> (Vec<char>, Cube) {
         if !solver.is_target_solved(cube) {
             seq.extend(solver.solve_target(cube));
         }
+        println!("DONE: current solver is {:?}", solver.target());
         if solver.target() == target {
+            println!("reached target  {:?}", target);
             break;
         }
 
@@ -137,7 +139,7 @@ pub trait Solver {
 
 #[cfg(test)]
 mod tests {
-    use crate::rubiks::shuffler::CubeShuffler;
+    use crate::rubiks::{shuffler::CubeShuffler, utils::print_cube};
 
     use super::*;
 
@@ -146,8 +148,8 @@ mod tests {
         let mut cube = Cube::new();
         let mut shuffler = CubeShuffler::new(&mut cube);
         shuffler.shuffle(20);
-        println!("cube is {:?}", cube);
-        let res = execute(&mut cube, SolveTarget::BottomCorner);
-        println!("解决方案序列: {:?}", res);
+        print_cube(&cube);
+        let res = execute(&mut cube, SolveTarget::MiddleEdge);
+        println!("after {:?}", res);
     }
 }

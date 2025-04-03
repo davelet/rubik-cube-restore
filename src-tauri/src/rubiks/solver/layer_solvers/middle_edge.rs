@@ -2,12 +2,12 @@ use crate::rubiks::cube::color::Color;
 use crate::rubiks::cube::face::FaceOrientation;
 use crate::rubiks::cube::Cube;
 
-use super::utils::*;
+use super::{utils::*, BottomCornerSolver};
 
 use super::super::{Solver, SolverEnum};
 use super::top_cross::TopCrossSolver;
 
-pub struct MiddleSolver {}
+pub struct MiddleSolver;
 
 impl Solver for MiddleSolver {
     fn target(&self) -> super::super::SolveTarget {
@@ -15,6 +15,10 @@ impl Solver for MiddleSolver {
     }
 
     fn solve_target(&mut self, cube: &mut Cube) -> Vec<char> {
+        if !Self::bottom_layer_solved(cube) {
+            panic!("Bottom layer not solved");
+        }
+
         let mut steps = vec![];
 
         for _ in 0..4 {
@@ -57,6 +61,10 @@ impl Solver for MiddleSolver {
 }
 
 impl MiddleSolver {
+    fn bottom_layer_solved(cube: &Cube) -> bool {
+        (&BottomCornerSolver).is_target_solved(cube)
+    }
+
     fn check_and_solve_edge(cube: &mut Cube, face: FaceOrientation, steps: &mut Vec<char>) {
         if !Self::is_edge_solved(cube, face) {
             if Self::find_edge_in_top(cube, face, steps) {

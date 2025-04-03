@@ -1,3 +1,5 @@
+use crate::rubiks::prelude::FaceOrientation;
+
 use super::cube::{color::Color, Cube};
 
 pub fn color_state_to_u8(cube: &Cube) -> [[[u8; 3]; 3]; 6] {
@@ -10,13 +12,7 @@ pub fn color_state_to_u8(cube: &Cube) -> [[[u8; 3]; 3]; 6] {
             }
         }
     }
-    // println!("魔方状态数组:");
-    // for face in 0..6 {
-    //     println!("面 {}:", face);
-    //     for row in 0..3 {
-    //         println!("{:?}", cube.state[face][row]);
-    //     }
-    // }
+
     result
 }
 
@@ -30,4 +26,14 @@ pub fn u8_to_color_state(state: [[[u8; 3]; 3]; 6]) -> Cube {
         }
     }
     Cube::from_state(color_state)
+}
+
+pub fn print_cube(cube: &Cube) {
+    // println!("魔方状态数组:");
+    for face in 0..6 {
+        println!("面 {:?}:", FaceOrientation::from_u8(face as u8));
+        for row in 0..3 {
+            println!("{:?}", cube.state[face][row]);
+        }
+    }
 }
