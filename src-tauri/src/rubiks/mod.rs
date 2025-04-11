@@ -2,10 +2,10 @@
 
 use prelude::*;
 
-mod cube;
-mod shuffler;
-mod solver;
-mod utils;
+pub mod cube;
+pub mod shuffler;
+pub mod solver;
+pub mod utils;
 
 mod prelude {
     pub use super::cube::{

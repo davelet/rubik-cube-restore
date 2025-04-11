@@ -175,7 +175,7 @@ impl BottomCornerSolver {
             Self::get_right_face_on_position(FaceOrientation::Up(Color::Yellow), row, col);
         let mut at_bottom = false;
 
-        for _ in 0..5 {
+        for _ in 0..8 {
             if at_bottom {
                 let bottom_row = 2 - row;
                 if Self::is_bottom_corner_done(cube, bottom_row, col) {
@@ -184,7 +184,8 @@ impl BottomCornerSolver {
                     rotate_and_record(cube, right_face, true, steps);
                     rotate_and_record(cube, FaceOrientation::Up(Color::Yellow), true, steps);
                     rotate_and_record(cube, right_face, false, steps);
-                    // rotate_and_record(cube, FaceOrientation::Up(Color::Yellow), false, steps);
+                    rotate_and_record(cube, FaceOrientation::Up(Color::Yellow), false, steps);
+                    at_bottom = false;
                 }
             } else {
                 rotate_and_record(cube, right_face, true, steps);
