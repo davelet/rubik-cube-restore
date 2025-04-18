@@ -1,6 +1,5 @@
 pub use layer_solvers::*;
-
-pub use super::cube::Cube;
+use rubik_cube_core::cube::Cube;
 
 mod layer_solvers;
 
@@ -135,21 +134,4 @@ pub trait Solver {
     fn is_target_solved(&self, cube: &Cube) -> bool;
 
     fn next_solver(&self) -> Option<SolverEnum>;
-}
-
-#[cfg(test)]
-mod tests {
-    use crate::rubiks::{shuffler::CubeShuffler, utils::print_cube};
-
-    use super::*;
-
-    #[test]
-    fn test_solve() {
-        let mut cube = Cube::new();
-        let mut shuffler = CubeShuffler::new(&mut cube);
-        shuffler.shuffle(20);
-        print_cube(&cube);
-        let res = execute(&mut cube, SolveTarget::MiddleEdge);
-        println!("after {:?}", res);
-    }
 }

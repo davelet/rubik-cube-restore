@@ -1,7 +1,6 @@
-use crate::rubiks::cube::color::Color;
-use crate::rubiks::cube::{face::FaceOrientation, Cube};
-use super::utils::*;
 use super::super::{Solver, SolverEnum};
+use super::utils::*;
+use rubik_cube_core::cube::{color::Color, face::FaceOrientation, Cube};
 
 pub struct TopCornerSolver {}
 

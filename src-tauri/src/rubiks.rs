@@ -1,22 +1,14 @@
 //! Rubik's Cube implementation module
 
-use prelude::*;
-
-pub mod cube;
-pub mod shuffler;
-pub mod solver;
-pub mod utils;
-
-mod prelude {
-    pub use super::cube::{
-        color::Color,
-        face::{FaceOrientation, TwistDirection},
-        Cube,
-    };
-    pub use super::shuffler::*;
-    pub use super::solver::{execute, SolveTarget};
-    pub use super::utils::*;
-}
+use rubik_cube_core::cube::{
+    face::{FaceOrientation, TwistDirection},
+    Cube,
+};
+use rubik_cube_shuffler::{CubeScrambler, CubeShuffler};
+use rubik_cube_solver::{
+    solver::{execute, SolveTarget},
+    utils::{color_state_to_u8, u8_to_color_state},
+};
 
 #[tauri::command]
 pub fn init_get_get_state() -> [[[u8; 3]; 3]; 6] {
@@ -51,7 +43,7 @@ pub fn turn(state: [[[u8; 3]; 3]; 6], face: u8, direction: bool) -> [[[u8; 3]; 3
 #[tauri::command]
 pub fn solve(state: [[[u8; 3]; 3]; 6], target: u8) -> SolveSolution {
     let mut cube = u8_to_color_state(state);
-    let target = solver::SolveTarget::from_u8(target);
+    let target = SolveTarget::from_u8(target);
     let result = execute(&mut cube, target);
     println!("cube after solve: {:?}", cube);
     SolveSolution {
@@ -64,4 +56,22 @@ pub fn solve(state: [[[u8; 3]; 3]; 6], target: u8) -> SolveSolution {
 pub struct SolveSolution {
     seq: Vec<char>,
     cube: [[[u8; 3]; 3]; 6],
+}
+
+#[cfg(test)]
+mod tests {
+    use rubik_cube_core::cube::Cube;
+    use rubik_cube_shuffler::CubeShuffler;
+
+    use super::*;
+
+    #[test]
+    fn test_solve() {
+        let mut cube = Cube::new();
+        let mut shuffler = CubeShuffler::new(&mut cube);
+        shuffler.shuffle(20);
+        // print_cube(&cube);
+        let res = execute(&mut cube, SolveTarget::TopCross);
+        println!("after {:?}", res);
+    }
 }

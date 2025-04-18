@@ -1,6 +1,4 @@
-use crate::rubiks::cube::color::Color;
-use crate::rubiks::cube::face::FaceOrientation;
-use crate::rubiks::cube::Cube;
+use rubik_cube_core::cube::{color::Color, face::FaceOrientation, Cube};
 
 use super::{utils::*, BottomCornerSolver};
 

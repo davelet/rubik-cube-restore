@@ -1,6 +1,4 @@
-use crate::rubiks::cube::color::Color;
-use crate::rubiks::cube::face::FaceOrientation;
-use crate::rubiks::cube::Cube;
+use rubik_cube_core::cube::{color::Color, face::FaceOrientation, Cube};
 
 use super::super::{Solver, SolverEnum};
 use super::top_face::TopFaceSolver;
@@ -13,6 +11,10 @@ impl Solver for TopCrossSolver {
     }
 
     fn solve_target(&mut self, cube: &mut Cube) -> Vec<char> {
+        if !self.is_previous_solved() {
+            panic!("previous not solved");
+        }
+
         let mut steps = vec![];
 
         while !self.is_target_solved(cube) {
@@ -34,8 +36,10 @@ impl Solver for TopCrossSolver {
         let face_colors = cube.get_face_state(FaceOrientation::Up(Color::Yellow).ordinal());
         let color = face_colors[1][1];
 
-        face_colors[0][1] == color && face_colors[1][0] == color
-            && face_colors[1][2] == color && face_colors[2][1] == color
+        face_colors[0][1] == color
+            && face_colors[1][0] == color
+            && face_colors[1][2] == color
+            && face_colors[2][1] == color
     }
 
     fn next_solver(&self) -> Option<SolverEnum> {
@@ -44,14 +48,26 @@ impl Solver for TopCrossSolver {
 }
 
 impl TopCrossSolver {
+    fn is_previous_solved(self: &Self) -> bool {
+        false
+    }
+
     fn count_yellow_edges(cube: &Cube) -> u8 {
         let face_colors = cube.get_face_state(FaceOrientation::Up(Color::Yellow).ordinal());
         let mut count = 0;
 
-        if face_colors[0][1] == Color::Yellow { count += 1; }
-        if face_colors[1][0] == Color::Yellow { count += 1; }
-        if face_colors[1][2] == Color::Yellow { count += 1; }
-        if face_colors[2][1] == Color::Yellow { count += 1; }
+        if face_colors[0][1] == Color::Yellow {
+            count += 1;
+        }
+        if face_colors[1][0] == Color::Yellow {
+            count += 1;
+        }
+        if face_colors[1][2] == Color::Yellow {
+            count += 1;
+        }
+        if face_colors[2][1] == Color::Yellow {
+            count += 1;
+        }
 
         count
     }
@@ -68,7 +84,9 @@ impl TopCrossSolver {
 
     fn solve_one_yellow(cube: &mut Cube, steps: &mut Vec<char>) {
         // Rotate top face until yellow edge is at the back
-        while cube.get_face_state(FaceOrientation::Up(Color::Yellow).ordinal())[0][1] != Color::Yellow {
+        while cube.get_face_state(FaceOrientation::Up(Color::Yellow).ordinal())[0][1]
+            != Color::Yellow
+        {
             rotate_and_record(cube, FaceOrientation::Up(Color::Yellow), true, steps);
         }
 
@@ -84,8 +102,10 @@ impl TopCrossSolver {
 
     fn solve_two_yellow(cube: &mut Cube, steps: &mut Vec<char>) {
         // Rotate top face until yellow edges form a line
-        while cube.get_face_state(FaceOrientation::Up(Color::Yellow).ordinal())[1][0] != Color::Yellow
-            || cube.get_face_state(FaceOrientation::Up(Color::Yellow).ordinal())[1][2] != Color::Yellow
+        while cube.get_face_state(FaceOrientation::Up(Color::Yellow).ordinal())[1][0]
+            != Color::Yellow
+            || cube.get_face_state(FaceOrientation::Up(Color::Yellow).ordinal())[1][2]
+                != Color::Yellow
         {
             rotate_and_record(cube, FaceOrientation::Up(Color::Yellow), true, steps);
         }

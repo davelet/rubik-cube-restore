@@ -1,12 +1,9 @@
-use crate::rubiks::{
-    cube::{
-        color::Color,
-        face::{FaceOrientation, TwistDirection},
-        Cube,
-    },
-    shuffler::CubeScrambler,
-    utils::print_cube,
+use rubik_cube_core::cube::{
+    color::Color,
+    face::{FaceOrientation, TwistDirection},
+    Cube,
 };
+use rubik_cube_shuffler::CubeScrambler;
 
 pub fn rotate_and_record(
     cube: &mut Cube,

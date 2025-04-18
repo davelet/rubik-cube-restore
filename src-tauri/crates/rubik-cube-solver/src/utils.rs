@@ -1,6 +1,4 @@
-use crate::rubiks::prelude::FaceOrientation;
-
-use super::cube::{color::Color, Cube};
+use rubik_cube_core::cube::{color::Color, face::FaceOrientation, Cube};
 
 pub fn color_state_to_u8(cube: &Cube) -> [[[u8; 3]; 3]; 6] {
     let color_state: [[[Color; 3]; 3]; 6] = cube.state;

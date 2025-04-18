@@ -1,9 +1,8 @@
 use super::super::{Solver, SolverEnum};
 use super::top_edge::TopEdgeSolver;
-use crate::rubiks::cube::color::Color;
-use crate::rubiks::cube::face::FaceOrientation;
-use crate::rubiks::cube::Cube;
 use super::utils::*;
+use rubik_cube_core::cube::{color::Color, face::FaceOrientation, Cube};
+
 pub struct TopFaceSolver {}
 
 impl Solver for TopFaceSolver {
@@ -54,10 +53,18 @@ impl TopFaceSolver {
         let face_colors = cube.get_face_state(FaceOrientation::Up(Color::Yellow).ordinal());
         let mut count = 0;
 
-        if face_colors[0][0] == Color::Yellow { count += 1; }
-        if face_colors[0][2] == Color::Yellow { count += 1; }
-        if face_colors[2][0] == Color::Yellow { count += 1; }
-        if face_colors[2][2] == Color::Yellow { count += 1; }
+        if face_colors[0][0] == Color::Yellow {
+            count += 1;
+        }
+        if face_colors[0][2] == Color::Yellow {
+            count += 1;
+        }
+        if face_colors[2][0] == Color::Yellow {
+            count += 1;
+        }
+        if face_colors[2][2] == Color::Yellow {
+            count += 1;
+        }
 
         count
     }
@@ -68,7 +75,9 @@ impl TopFaceSolver {
 
     fn solve_one_yellow(cube: &mut Cube, steps: &mut Vec<char>) {
         // Rotate until yellow corner is at front-right
-        while cube.get_face_state(FaceOrientation::Up(Color::Yellow).ordinal())[2][2] != Color::Yellow {
+        while cube.get_face_state(FaceOrientation::Up(Color::Yellow).ordinal())[2][2]
+            != Color::Yellow
+        {
             rotate_and_record(cube, FaceOrientation::Up(Color::Yellow), true, steps);
         }
         Self::apply_algorithm(cube, steps);
@@ -76,8 +85,10 @@ impl TopFaceSolver {
 
     fn solve_two_yellow(cube: &mut Cube, steps: &mut Vec<char>) {
         // Rotate until yellow corners form a line
-        while cube.get_face_state(FaceOrientation::Up(Color::Yellow).ordinal())[0][0] != Color::Yellow
-            || cube.get_face_state(FaceOrientation::Up(Color::Yellow).ordinal())[2][2] != Color::Yellow
+        while cube.get_face_state(FaceOrientation::Up(Color::Yellow).ordinal())[0][0]
+            != Color::Yellow
+            || cube.get_face_state(FaceOrientation::Up(Color::Yellow).ordinal())[2][2]
+                != Color::Yellow
         {
             rotate_and_record(cube, FaceOrientation::Up(Color::Yellow), true, steps);
         }
@@ -86,7 +97,9 @@ impl TopFaceSolver {
 
     fn solve_three_yellow(cube: &mut Cube, steps: &mut Vec<char>) {
         // Rotate until non-yellow corner is at front-right
-        while cube.get_face_state(FaceOrientation::Up(Color::Yellow).ordinal())[2][2] == Color::Yellow {
+        while cube.get_face_state(FaceOrientation::Up(Color::Yellow).ordinal())[2][2]
+            == Color::Yellow
+        {
             rotate_and_record(cube, FaceOrientation::Up(Color::Yellow), true, steps);
         }
         Self::apply_algorithm(cube, steps);
