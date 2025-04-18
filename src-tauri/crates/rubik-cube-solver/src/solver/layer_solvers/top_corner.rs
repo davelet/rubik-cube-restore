@@ -1,6 +1,4 @@
-use super::super::{Solver, SolverEnum};
-use super::utils::*;
-use rubik_cube_core::cube::{color::Color, face::FaceOrientation, Cube};
+use super::prelude::*;
 
 pub struct TopCornerSolver {}
 
@@ -76,7 +74,7 @@ impl TopCornerSolver {
     }
 
     fn apply_algorithm(cube: &mut Cube, steps: &mut Vec<char>) {
-        let front_face = FaceOrientation::Front(Color::Blue);
+        // let front_face = FaceOrientation::Front(Color::Blue);
         let right_face = FaceOrientation::Right(Color::Red);
         let up_face = FaceOrientation::Up(Color::Yellow);
 
