@@ -19,8 +19,8 @@ pub enum SolveTarget {
     MiddleEdge,
     TopCross,
     TopFace,
-    TopEdge,
     TopCorner,
+    TopEdge,
 }
 
 impl SolveTarget {
@@ -31,8 +31,8 @@ impl SolveTarget {
             2 => SolveTarget::MiddleEdge,
             3 => SolveTarget::TopCross,
             4 => SolveTarget::TopFace,
-            5 => SolveTarget::TopEdge,
-            6 => SolveTarget::TopCorner,
+            5 => SolveTarget::TopCorner,
+            6 => SolveTarget::TopEdge,
             _ => panic!("Invalid solve target value: {}", value),
         }
     }

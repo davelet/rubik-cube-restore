@@ -1,3 +1,5 @@
+use crate::utils::print_cube;
+
 use super::prelude::*;
 
 pub struct MiddleSolver;
@@ -161,6 +163,7 @@ impl MiddleSolver {
             rotate_and_record(cube, up_face, true, steps);
             count += 1;
             if count > 4 {
+                print_cube(cube);
                 panic!("find_target_edge_on_top exceeded max rotations");
             }
         }

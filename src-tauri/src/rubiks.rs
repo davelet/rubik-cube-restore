@@ -71,7 +71,7 @@ mod tests {
         let mut shuffler = CubeShuffler::new(&mut cube);
         shuffler.shuffle(20);
         // print_cube(&cube);
-        let res = execute(&mut cube, SolveTarget::TopCross);
+        let res = execute(&mut cube, SolveTarget::TopEdge);
         println!("after {:?}", res);
     }
 }

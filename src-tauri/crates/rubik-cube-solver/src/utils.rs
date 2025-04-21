@@ -29,7 +29,7 @@ pub fn u8_to_color_state(state: [[[u8; 3]; 3]; 6]) -> Cube {
 pub fn print_cube(cube: &Cube) {
     // println!("魔方状态数组:");
     for face in 0..6 {
-        println!("面 {:?}:", FaceOrientation::from_u8(face as u8));
+        println!("{:?}:", FaceOrientation::from_u8(face as u8));
         for row in 0..3 {
             println!("{:?}", cube.state[face][row]);
         }
