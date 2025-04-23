@@ -37,58 +37,58 @@ impl Solver for TopEdgeSolver {
 }
 
 impl TopEdgeSolver {
-    fn has_aligned_edge(&self, cube: &Cube) -> FaceOrientation {
+    fn has_aligned_edge(&self, cube: &Cube) -> Face {
         // Check if any edge is already aligned
         for face in [
-            FaceOrientation::Front(Color::Blue),
-            FaceOrientation::Right(Color::Red),
-            FaceOrientation::Back(Color::Orange),
-            FaceOrientation::Left(Color::Green),
+            Face::Front,
+            Face::Right,
+            Face::Back,
+            Face::Left,
         ] {
             if cube.get_block_color(face.ordinal(), 0, 1) == face.color() {
                 return face;
             }
         }
-        FaceOrientation::Back(Color::Orange)
+        Face::Back
     }
 
     fn execute_edge_permutation_algorithm(
         &self,
         cube: &mut Cube,
-        face: FaceOrientation,
+        face: Face,
         steps: &mut Vec<char>,
     ) {
         // Calculate pre-rotation count based on face
         let rotations = match face {
-            FaceOrientation::Front(Color::Blue) => 2,
-            FaceOrientation::Right(Color::Red) => 3,
-            FaceOrientation::Left(Color::Green) => 1,
+            Face::Front => 2,
+            Face::Right => 3,
+            Face::Left => 1,
             _ => 0,
         };
 
         // Pre-rotate to move aligned face to back
         for _ in 0..rotations {
-            rotate_and_record(cube, FaceOrientation::Up(Color::Yellow), true, steps);
+            rotate_and_record(cube, Face::Up, true, steps);
         }
 
         // Execute edge permutation algorithm: R U' R U R U R U' R' U' R' R'
-        rotate_and_record(cube, FaceOrientation::Right(Color::Red), true, steps);
-        rotate_and_record(cube, FaceOrientation::Up(Color::Yellow), false, steps);
-        rotate_and_record(cube, FaceOrientation::Right(Color::Red), true, steps);
-        rotate_and_record(cube, FaceOrientation::Up(Color::Yellow), true, steps);
-        rotate_and_record(cube, FaceOrientation::Right(Color::Red), true, steps);
-        rotate_and_record(cube, FaceOrientation::Up(Color::Yellow), true, steps);
-        rotate_and_record(cube, FaceOrientation::Right(Color::Red), true, steps);
-        rotate_and_record(cube, FaceOrientation::Up(Color::Yellow), false, steps);
+        rotate_and_record(cube, Face::Right, true, steps);
+        rotate_and_record(cube, Face::Up, false, steps);
+        rotate_and_record(cube, Face::Right, true, steps);
+        rotate_and_record(cube, Face::Up, true, steps);
+        rotate_and_record(cube, Face::Right, true, steps);
+        rotate_and_record(cube, Face::Up, true, steps);
+        rotate_and_record(cube, Face::Right, true, steps);
+        rotate_and_record(cube, Face::Up, false, steps);
 
-        rotate_and_record(cube, FaceOrientation::Right(Color::Red), false, steps);
-        rotate_and_record(cube, FaceOrientation::Up(Color::Yellow), false, steps);
-        rotate_and_record(cube, FaceOrientation::Right(Color::Red), false, steps);
-        rotate_and_record(cube, FaceOrientation::Right(Color::Red), false, steps);
+        rotate_and_record(cube, Face::Right, false, steps);
+        rotate_and_record(cube, Face::Up, false, steps);
+        rotate_and_record(cube, Face::Right, false, steps);
+        rotate_and_record(cube, Face::Right, false, steps);
 
         // Rotate back to original orientation
         for _ in 0..(4 - rotations) % 4 {
-            rotate_and_record(cube, FaceOrientation::Up(Color::Yellow), true, steps);
+            rotate_and_record(cube, Face::Up, true, steps);
         }
     }
 }

@@ -1,13 +1,12 @@
 use rubik_cube_core::cube::{
-    color::Color,
-    face::{FaceOrientation, TwistDirection},
+    face::{Face, TwistDirection},
     Cube,
 };
 use rubik_cube_shuffler::CubeScrambler;
 
 pub fn rotate_and_record(
     cube: &mut Cube,
-    face: FaceOrientation,
+    face: Face,
     clockwize_direction: bool,
     steps: &mut Vec<char>,
 ) {
@@ -22,42 +21,42 @@ pub fn rotate_and_record(
     );
 
     let step = match face {
-        FaceOrientation::Front(_) => {
+        Face::Front => {
             if clockwize_direction {
                 'f'
             } else {
                 'F'
             }
         }
-        FaceOrientation::Back(_) => {
+        Face::Back => {
             if clockwize_direction {
                 'b'
             } else {
                 'B'
             }
         }
-        FaceOrientation::Left(_) => {
+        Face::Left => {
             if clockwize_direction {
                 'l'
             } else {
                 'L'
             }
         }
-        FaceOrientation::Right(_) => {
+        Face::Right => {
             if clockwize_direction {
                 'r'
             } else {
                 'R'
             }
         }
-        FaceOrientation::Up(_) => {
+        Face::Up => {
             if clockwize_direction {
                 'u'
             } else {
                 'U'
             }
         }
-        FaceOrientation::Down(_) => {
+        Face::Down => {
             if clockwize_direction {
                 'd'
             } else {
@@ -71,32 +70,32 @@ pub fn rotate_and_record(
     // print_cube(cube);
 }
 
-pub fn get_up_center(face: FaceOrientation) -> (usize, usize) {
+pub fn get_up_center(face: Face) -> (usize, usize) {
     match face {
-        FaceOrientation::Front(_) => (2, 1),
-        FaceOrientation::Right(_) => (1, 2),
-        FaceOrientation::Back(_) => (0, 1),
-        FaceOrientation::Left(_) => (1, 0),
-        _ => panic!("Invalid face orientation for get_up_center: {:?}", face),
+        Face::Front => (2, 1),
+        Face::Right => (1, 2),
+        Face::Back => (0, 1),
+        Face::Left => (1, 0),
+        _ => panic!("Invalid face for get_up_center: {:?}", face),
     }
 }
 
-pub fn get_right_side(face: FaceOrientation) -> FaceOrientation {
+pub fn get_right_side(face: Face) -> Face {
     match face {
-        FaceOrientation::Front(_) => FaceOrientation::Right(Color::Red),
-        FaceOrientation::Right(_) => FaceOrientation::Back(Color::Green),
-        FaceOrientation::Back(_) => FaceOrientation::Left(Color::Orange),
-        FaceOrientation::Left(_) => FaceOrientation::Front(Color::Blue),
+        Face::Front => Face::Right,
+        Face::Right => Face::Back,
+        Face::Back => Face::Left,
+        Face::Left => Face::Front,
         _ => panic!("Invalid face orientation for get_right_side: {:?}", face),
     }
 }
 
-pub fn get_left_side(face: FaceOrientation) -> FaceOrientation {
+pub fn get_left_side(face: Face) -> Face {
     match face {
-        FaceOrientation::Front(_) => FaceOrientation::Left(Color::Orange),
-        FaceOrientation::Left(_) => FaceOrientation::Back(Color::Green),
-        FaceOrientation::Back(_) => FaceOrientation::Right(Color::Red),
-        FaceOrientation::Right(_) => FaceOrientation::Front(Color::Blue),
+        Face::Front => Face::Left,
+        Face::Left => Face::Back,
+        Face::Back => Face::Right,
+        Face::Right => Face::Front,
         _ => panic!("Invalid face orientation for get_left_side: {:?}", face),
     }
 }

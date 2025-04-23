@@ -13,10 +13,10 @@ impl Solver for MiddleSolver {
         let mut steps = vec![];
 
         let faces_to_solve = [
-            FaceOrientation::Front(Color::Blue),
-            FaceOrientation::Right(Color::Red),
-            FaceOrientation::Back(Color::Green),
-            FaceOrientation::Left(Color::Orange),
+            Face::Front,
+            Face::Right,
+            Face::Back,
+            Face::Left,
         ];
 
         for face in faces_to_solve {
@@ -35,7 +35,7 @@ impl Solver for MiddleSolver {
             } else {
                 // The Java code rotates U' then calls insert_edge_left on the *right* side.
                 // Let's stick to the Java logic for now.
-                rotate_and_record(cube, FaceOrientation::Up(Color::Yellow), false, &mut steps);
+                rotate_and_record(cube, Face::Up, false, &mut steps);
                 let right_side = get_right_side(face);
                 Self::insert_edge_left(cube, right_side, &mut steps);
             }
@@ -64,7 +64,7 @@ impl Solver for MiddleSolver {
 
 impl MiddleSolver {
     // Checks if the middle edge between 'face' and its right side is correctly placed.
-    fn is_edge_correct(cube: &Cube, face: FaceOrientation) -> bool {
+    fn is_edge_correct(cube: &Cube, face: Face) -> bool {
         let face_color = face.color();
         let right_side = get_right_side(face);
         let right_color = right_side.color();
@@ -74,15 +74,15 @@ impl MiddleSolver {
     }
 
     // Checks if the target edge for 'target_face' is currently misplaced in another middle layer slot.
-    fn has_target_edge_in_middle(cube: &Cube, target_face: FaceOrientation) -> bool {
+    fn has_target_edge_in_middle(cube: &Cube, target_face: Face) -> bool {
         let target_color = target_face.color();
         let target_right_color = get_right_side(target_face).color();
 
         let faces_to_check = [
-            FaceOrientation::Front(Color::Blue),
-            FaceOrientation::Right(Color::Red),
-            FaceOrientation::Back(Color::Green),
-            FaceOrientation::Left(Color::Orange),
+            Face::Front,
+            Face::Right,
+            Face::Back,
+            Face::Left,
         ];
 
         for check_face in faces_to_check {
@@ -104,15 +104,15 @@ impl MiddleSolver {
     }
 
     // Finds the misplaced edge corresponding to 'target_face' and extracts it to the top layer.
-    fn extract_target_edge(cube: &mut Cube, target_face: FaceOrientation, steps: &mut Vec<char>) {
+    fn extract_target_edge(cube: &mut Cube, target_face: Face, steps: &mut Vec<char>) {
         let target_color = target_face.color();
         let target_right_color = get_right_side(target_face).color();
 
         let faces_to_check = [
-            FaceOrientation::Front(Color::Blue),
-            FaceOrientation::Right(Color::Red),
-            FaceOrientation::Back(Color::Green),
-            FaceOrientation::Left(Color::Orange),
+            Face::Front,
+            Face::Right,
+            Face::Back,
+            Face::Left,
         ];
 
         for check_face in faces_to_check {
@@ -133,10 +133,10 @@ impl MiddleSolver {
     }
 
     // Rotates the top layer until the target edge for 'target_face' is positioned above 'target_face'.
-    fn find_target_edge_on_top(cube: &mut Cube, target_face: FaceOrientation, steps: &mut Vec<char>) {
+    fn find_target_edge_on_top(cube: &mut Cube, target_face: Face, steps: &mut Vec<char>) {
         let target_color = target_face.color();
         let target_right_color = get_right_side(target_face).color();
-        let up_face = FaceOrientation::Up(Color::Yellow);
+        let up_face = Face::Up;
         let up_ordinal = up_face.ordinal();
         let (up_row, up_col) = get_up_center(target_face);
         let face_ordinal = target_face.ordinal();
@@ -162,15 +162,15 @@ impl MiddleSolver {
     }
 
     // Checks if the edge currently on top, above 'face', is oriented correctly for a right insert.
-    fn is_edge_ready_for_right_insert(cube: &Cube, face: FaceOrientation) -> bool {
+    fn is_edge_ready_for_right_insert(cube: &Cube, face: Face) -> bool {
         let face_color = face.color();
         // Check the color on the 'face' side of the top edge piece
         cube.get_block_color(face.ordinal(), 0, 1) == face_color
     }
 
     // Performs the left insertion algorithm: U' L' U L U F U' F'
-    fn insert_edge_left(cube: &mut Cube, face: FaceOrientation, steps: &mut Vec<char>) {
-        let up = FaceOrientation::Up(Color::Yellow);
+    fn insert_edge_left(cube: &mut Cube, face: Face, steps: &mut Vec<char>) {
+        let up = Face::Up;
         let left = get_left_side(face);
 
         rotate_and_record(cube, up, false, steps); // U'
@@ -184,8 +184,8 @@ impl MiddleSolver {
     }
 
     // Performs the right insertion algorithm: U R U' R' U' F' U F
-    fn insert_edge_right(cube: &mut Cube, face: FaceOrientation, steps: &mut Vec<char>) {
-        let up = FaceOrientation::Up(Color::Yellow);
+    fn insert_edge_right(cube: &mut Cube, face: Face, steps: &mut Vec<char>) {
+        let up = Face::Up;
         let right = get_right_side(face);
 
         rotate_and_record(cube, up, true, steps); // U

@@ -1,6 +1,6 @@
 pub use super::super::{Solver, SolverEnum};
 pub use super::utils::*;
-pub use rubik_cube_core::cube::{color::Color, face::FaceOrientation, Cube};
+pub use rubik_cube_core::cube::{color::Color, face::Face, Cube};
 
 pub use super::super::SolveTarget;
 pub use super::bottom_corner::*;

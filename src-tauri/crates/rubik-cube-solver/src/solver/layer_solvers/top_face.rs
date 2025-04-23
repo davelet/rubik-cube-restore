@@ -37,7 +37,7 @@ impl Solver for TopFaceSolver {
     }
 
     fn is_target_solved(&self, cube: &Cube) -> bool {
-        let face_colors = cube.get_face_state(FaceOrientation::Up(Color::Yellow).ordinal());
+        let face_colors = cube.get_face_state(Face::Up.ordinal());
         let color = face_colors[1][1];
 
         for i in 0..3 {
@@ -59,7 +59,7 @@ impl Solver for TopFaceSolver {
 
 impl TopFaceSolver {
     fn count_yellow_corners(&self, cube: &Cube) -> usize {
-        let up = FaceOrientation::Up(Color::Yellow);
+        let up = Face::Up;
         let up_ordinal = up.ordinal();
         
         let mut count = 0;
@@ -71,11 +71,11 @@ impl TopFaceSolver {
     }
 
     fn on_right_side(&self, cube: &mut Cube) -> bool {
-        let up = FaceOrientation::Up(Color::Yellow);
-        let left = FaceOrientation::Left(Color::Green);
-        let front = FaceOrientation::Front(Color::Blue);
-        let right = FaceOrientation::Right(Color::Red);
-        let back = FaceOrientation::Back(Color::Orange);
+        let up = Face::Up;
+        let left = Face::Left;
+        let front = Face::Front;
+        let right = Face::Right;
+        let back = Face::Back;
         
         if cube.get_block_color(up.ordinal(), 0, 0) == Color::Yellow {
             if cube.get_block_color(left.ordinal(), 0, 2) == Color::Yellow {
@@ -126,22 +126,22 @@ impl TopFaceSolver {
     }
 
     fn align_2_not_yellow(&self, cube: &mut Cube, steps: &mut Vec<char>) {
-        let front = FaceOrientation::Front(Color::Blue);
+        let front = Face::Front;
         while cube.get_block_color(front.ordinal(), 0, 0) != Color::Yellow {
-            rotate_and_record(cube, FaceOrientation::Up(Color::Yellow), true, steps);
+            rotate_and_record(cube, Face::Up, true, steps);
         }
     }
 
     fn align_4_not_yellow(&self, cube: &mut Cube, steps: &mut Vec<char>) {
-        let left = FaceOrientation::Left(Color::Green);
+        let left = Face::Left;
         while cube.get_block_color(left.ordinal(), 0, 2) != Color::Yellow {
-            rotate_and_record(cube, FaceOrientation::Up(Color::Yellow), true, steps);
+            rotate_and_record(cube, Face::Up, true, steps);
         }
     }
 
     fn left_hand_algorithm(&self, cube: &mut Cube, steps: &mut Vec<char>) {
-        let left = FaceOrientation::Left(Color::Green);
-        let up = FaceOrientation::Up(Color::Yellow);
+        let left = Face::Left;
+        let up = Face::Up;
         
         rotate_and_record(cube, left, false, steps);
         rotate_and_record(cube, up, false, steps);
@@ -154,8 +154,8 @@ impl TopFaceSolver {
     }
 
     fn right_hand_algorithm(&self, cube: &mut Cube, steps: &mut Vec<char>) {
-        let right = FaceOrientation::Right(Color::Red);
-        let up = FaceOrientation::Up(Color::Yellow);
+        let right = Face::Right;
+        let up = Face::Up;
         
         rotate_and_record(cube, right, true, steps);
         rotate_and_record(cube, up, true, steps);

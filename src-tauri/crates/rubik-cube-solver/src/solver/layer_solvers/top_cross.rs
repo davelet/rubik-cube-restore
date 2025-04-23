@@ -33,7 +33,7 @@ impl Solver for TopCrossSolver {
   
 
     fn is_target_solved(&self, cube: &Cube) -> bool {
-        let face_colors = cube.get_face_state(FaceOrientation::Up(Color::Yellow).ordinal());
+        let face_colors = cube.get_face_state(Face::Up.ordinal());
         let color = face_colors[1][1]; // Center color
 
         face_colors[0][1] == color
@@ -49,7 +49,7 @@ impl Solver for TopCrossSolver {
 
 impl TopCrossSolver {
     fn is_top_dot(cube: &Cube) -> bool {
-        let up = FaceOrientation::Up(Color::Yellow);
+        let up = Face::Up;
         let up_ordinal = up.ordinal();
         
         cube.get_block_color(up_ordinal, 0, 1) != Color::Yellow &&
@@ -59,7 +59,7 @@ impl TopCrossSolver {
     }
     
     fn is_top_l(cube: &mut Cube) -> bool {
-        let up = FaceOrientation::Up(Color::Yellow);
+        let up = Face::Up;
         let up_ordinal = up.ordinal();
         
         let down = cube.get_block_color(up_ordinal, 2, 1) == Color::Yellow;
@@ -90,7 +90,7 @@ impl TopCrossSolver {
     }
     
     fn is_top_line(cube: &Cube) -> bool {
-        let up = FaceOrientation::Up(Color::Yellow);
+        let up = Face::Up;
         let up_ordinal = up.ordinal();
         
         cube.get_block_color(up_ordinal, 1, 0) == Color::Yellow &&
@@ -98,9 +98,9 @@ impl TopCrossSolver {
     }
     
     fn execute_top_cross(cube: &mut Cube, steps: &mut Vec<char>) {
-        let front = FaceOrientation::Front(Color::Blue);
-        let right = FaceOrientation::Right(Color::Red);
-        let up = FaceOrientation::Up(Color::Yellow);
+        let front = Face::Front;
+        let right = Face::Right;
+        let up = Face::Up;
         
         rotate_and_record(cube, front, true, steps);
         rotate_and_record(cube, right, true, steps);
@@ -112,7 +112,7 @@ impl TopCrossSolver {
     
     fn align_top_line(cube: &mut Cube, steps: &mut Vec<char>) {
         if !Self::is_top_line(cube) {
-            rotate_and_record(cube, FaceOrientation::Up(Color::Yellow), true, steps);
+            rotate_and_record(cube, Face::Up, true, steps);
         }
     }
 }

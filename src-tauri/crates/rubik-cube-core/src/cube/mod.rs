@@ -1,7 +1,7 @@
 //! Cube module
 
 use color::Color;
-use face::FaceOrientation;
+use face::Face;
 
 pub mod color;
 pub mod face;
@@ -15,7 +15,7 @@ impl Cube {
     pub fn new() -> Cube {
         let mut state = [[[Color::White; 3]; 3]; 6];
 
-        for face in FaceOrientation::values() {
+        for face in Face::values() {
             for i in 0..3 {
                 for j in 0..3 {
                     state[face.ordinal()][i][j] = face.color();

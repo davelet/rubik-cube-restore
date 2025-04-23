@@ -3,12 +3,12 @@ use super::prelude::*;
 pub struct TopCornerSolver {}
 
 impl TopCornerSolver {
-    fn has_eyed_corner(&self, cube: &Cube) -> Option<FaceOrientation> {
+    fn has_eyed_corner(&self, cube: &Cube) -> Option<Face> {
         for face in [
-            FaceOrientation::Front(Color::Blue),
-            FaceOrientation::Right(Color::Red),
-            FaceOrientation::Back(Color::Orange),
-            FaceOrientation::Left(Color::Green)
+            Face::Front,
+            Face::Right,
+            Face::Back,
+            Face::Left
         ] {
             if cube.get_block_color(face.ordinal(), 0, 0) == cube.get_block_color(face.ordinal(), 0, 2) {
                 return Some(face);
@@ -17,17 +17,17 @@ impl TopCornerSolver {
         None
     }
     
-    fn align_solved_corner(&self, cube: &mut Cube, face: FaceOrientation, steps: &mut Vec<char>) {
+    fn align_solved_corner(&self, cube: &mut Cube, face: Face, steps: &mut Vec<char>) {
         match face {
-            FaceOrientation::Right(Color::Red) => {
-                rotate_and_record(cube, FaceOrientation::Up(Color::Yellow), true, steps);
+            Face::Right => {
+                rotate_and_record(cube, Face::Up, true, steps);
             },
-            FaceOrientation::Back(Color::Orange) => {
-                rotate_and_record(cube, FaceOrientation::Up(Color::Yellow), true, steps);
-                rotate_and_record(cube, FaceOrientation::Up(Color::Yellow), true, steps);
+            Face::Back => {
+                rotate_and_record(cube, Face::Up, true, steps);
+                rotate_and_record(cube, Face::Up, true, steps);
             },
-            FaceOrientation::Left(Color::Green) => {
-                rotate_and_record(cube, FaceOrientation::Up(Color::Yellow), false, steps);
+            Face::Left => {
+                rotate_and_record(cube, Face::Up, false, steps);
             },
             _ => {}
         }
@@ -35,9 +35,9 @@ impl TopCornerSolver {
     
     fn execute_corner_permutation_algorithm(&self, cube: &mut Cube, steps: &mut Vec<char>) {
         // RB'RF2 R'BRF2 R2
-        let right = FaceOrientation::Right(Color::Red);
-        let back = FaceOrientation::Back(Color::Orange);
-        let front = FaceOrientation::Front(Color::Blue);
+        let right = Face::Right;
+        let back = Face::Back;
+        let front = Face::Front;
         
         rotate_and_record(cube, right, true, steps);
         rotate_and_record(cube, back, false, steps);
@@ -57,10 +57,10 @@ impl TopCornerSolver {
     
     fn almost_ready(&self, cube: &Cube) -> bool {
         for face in [
-            FaceOrientation::Front(Color::Blue),
-            FaceOrientation::Right(Color::Red),
-            FaceOrientation::Back(Color::Orange),
-            FaceOrientation::Left(Color::Green)
+            Face::Front,
+            Face::Right,
+            Face::Back,
+            Face::Left
         ] {
             if cube.get_block_color(face.ordinal(), 0, 0) != cube.get_block_color(face.ordinal(), 0, 2) {
                 return false;
@@ -99,16 +99,16 @@ impl Solver for TopCornerSolver {
         }
         
         if to_fix {
-            let front = FaceOrientation::Front(Color::Blue);
+            let front = Face::Front;
             let color = cube.get_block_color(front.ordinal(), 0, 0);
             
             match color {
-                Color::Green => rotate_and_record(cube, FaceOrientation::Up(Color::Yellow), true, &mut steps),
-                Color::Orange => {
-                    rotate_and_record(cube, FaceOrientation::Up(Color::Yellow), true, &mut steps);
-                    rotate_and_record(cube, FaceOrientation::Up(Color::Yellow), true, &mut steps);
+                Color::Orange => rotate_and_record(cube, Face::Up, true, &mut steps),
+                Color::Green => {
+                    rotate_and_record(cube, Face::Up, true, &mut steps);
+                    rotate_and_record(cube, Face::Up, true, &mut steps);
                 },
-                Color::Red => rotate_and_record(cube, FaceOrientation::Up(Color::Yellow), false, &mut steps),
+                Color::Red => rotate_and_record(cube, Face::Up, false, &mut steps),
                 _ => {}
             }
         }
@@ -117,7 +117,7 @@ impl Solver for TopCornerSolver {
     }
     
     fn is_target_solved(&self, cube: &Cube) -> bool {
-        let up = FaceOrientation::Up(Color::Yellow);
+        let up = Face::Up;
         let up_ordinal = up.ordinal();
         
         // Check all top face colors are yellow
@@ -131,10 +131,10 @@ impl Solver for TopCornerSolver {
         
         // Check all top corners are in correct position
         for face in [
-            FaceOrientation::Front(Color::Blue),
-            FaceOrientation::Right(Color::Red),
-            FaceOrientation::Back(Color::Orange),
-            FaceOrientation::Left(Color::Green)
+            Face::Front,
+            Face::Right,
+            Face::Back,
+            Face::Left
         ] {
             if cube.get_block_color(face.ordinal(), 0, 0) != face.color() ||
                cube.get_block_color(face.ordinal(), 0, 2) != face.color() {

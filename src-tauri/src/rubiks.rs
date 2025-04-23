@@ -1,7 +1,7 @@
 //! Rubik's Cube implementation module
 
 use rubik_cube_core::cube::{
-    face::{FaceOrientation, TwistDirection},
+    face::{Face, TwistDirection},
     Cube,
 };
 use rubik_cube_shuffler::{CubeScrambler, CubeShuffler};
@@ -30,7 +30,7 @@ pub fn turn(state: [[[u8; 3]; 3]; 6], face: u8, direction: bool) -> [[[u8; 3]; 3
     let mut cube = u8_to_color_state(state);
     let mut shuffler = CubeScrambler::new(&mut cube);
     shuffler.scramble(
-        FaceOrientation::from_u8(face),
+        Face::from(face),
         if direction {
             TwistDirection::Clockwise
         } else {
