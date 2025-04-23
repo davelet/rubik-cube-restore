@@ -1,8 +1,4 @@
-use rubik_cube_core::cube::{color::Color, face::FaceOrientation, Cube};
-
-use super::super::{Solver, SolverEnum};
-use super::top_face::TopFaceSolver;
-use super::{utils::*, MiddleSolver};
+use super::prelude::*;
 
 pub struct TopCrossSolver {}
 
@@ -12,10 +8,6 @@ impl Solver for TopCrossSolver {
     }
 
     fn solve_target(&mut self, cube: &mut Cube) -> Vec<char> {
-        if !Self::is_previous_solved(cube) {
-            panic!("previous not solved");
-        }
-
         let mut steps = vec![];
         let mut count = 0;
         
@@ -56,10 +48,6 @@ impl Solver for TopCrossSolver {
 }
 
 impl TopCrossSolver {
-    fn is_previous_solved(cube: &Cube) -> bool {
-        MiddleSolver.is_target_solved(cube)
-    }
-
     fn is_top_dot(cube: &Cube) -> bool {
         let up = FaceOrientation::Up(Color::Yellow);
         let up_ordinal = up.ordinal();

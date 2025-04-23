@@ -10,10 +10,6 @@ impl Solver for MiddleSolver {
     }
 
     fn solve_target(&mut self, cube: &mut Cube) -> Vec<char> {
-        if !Self::bottom_layer_solved(cube) {
-            panic!("Bottom layer not solved");
-        }
-
         let mut steps = vec![];
 
         let faces_to_solve = [
@@ -67,10 +63,6 @@ impl Solver for MiddleSolver {
 }
 
 impl MiddleSolver {
-    fn bottom_layer_solved(cube: &Cube) -> bool {
-        (&BottomCornerSolver).is_target_solved(cube)
-    }
-
     // Checks if the middle edge between 'face' and its right side is correctly placed.
     fn is_edge_correct(cube: &Cube, face: FaceOrientation) -> bool {
         let face_color = face.color();

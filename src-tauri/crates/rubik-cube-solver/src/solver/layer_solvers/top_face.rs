@@ -8,10 +8,6 @@ impl Solver for TopFaceSolver {
     }
 
     fn solve_target(&mut self, cube: &mut Cube) -> Vec<char> {
-        if !Self::is_previous_solved(cube) {
-            panic!("previous not solved");
-        }
-
         let mut steps = vec![];
         let mut count = 0;
         
@@ -62,10 +58,6 @@ impl Solver for TopFaceSolver {
 
 
 impl TopFaceSolver {
-    fn is_previous_solved(cube: &Cube) -> bool {
-        TopCrossSolver{}.is_target_solved(cube)
-    }
-
     fn count_yellow_corners(&self, cube: &Cube) -> usize {
         let up = FaceOrientation::Up(Color::Yellow);
         let up_ordinal = up.ordinal();

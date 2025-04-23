@@ -8,4 +8,4 @@ pub use super::middle_edge::*;
 pub use super::top_corner::*;
 pub use super::top_cross::*;
 pub use super::top_edge::*;
-// pub use super::top_face::*;
+pub use super::top_face::*;

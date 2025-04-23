@@ -46,9 +46,15 @@ pub fn execute(cube: &mut Cube, target: SolveTarget) -> (Vec<char>, Cube) {
     let mut seq = vec![];
     let first_solver = BottomCrossSolver {};
     let mut solver = SolverEnum::BottomCross(first_solver);
+    let mut prev_solver: Option<SolverEnum> = None;
 
     loop {
         if !solver.is_target_solved(cube) {
+            if let Some(prev) = prev_solver {
+                if !prev.is_target_solved(cube) {
+                    panic!("Previous solver is not solved");
+                }
+            }
             seq.extend(solver.solve_target(cube));
         }
         println!("DONE: current solver is {:?}", solver.target());
@@ -58,10 +64,12 @@ pub fn execute(cube: &mut Cube, target: SolveTarget) -> (Vec<char>, Cube) {
         }
 
         let next_solver = solver.next_solver();
+        prev_solver = Some(solver);
         solver = match next_solver {
             Some(s) => s,
             None => break,
         };
+
     }
     (seq, cube.clone())
 }
