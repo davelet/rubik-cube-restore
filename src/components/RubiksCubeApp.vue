@@ -44,7 +44,7 @@ export default {
   setup() {
     const store = useCubeStore();
     const cubeSize = store.cubeSize;
-    const PANEL_SIZE = 0; // 面板展开/收起时的尺寸变化值
+    const PANEL_SIZE = 30; // 面板展开/收起时的尺寸变化值
     return { store, cubeSize, PANEL_SIZE };
   },
 
@@ -112,13 +112,13 @@ export default {
         const { result: { width, height } } = await TauriService.getWindowSize();
         if (isOpen) {
           await TauriService.resizeWindow({
-            height: height + this.PANEL_SIZE * 4,
-            width: width + this.PANEL_SIZE
+            height: height + this.PANEL_SIZE,
+            width: width + this.PANEL_SIZE * 4
           });
         } else {
           await TauriService.resizeWindow({
-            height: height - this.PANEL_SIZE * 4,
-            width: width - this.PANEL_SIZE
+            height: height - this.PANEL_SIZE,
+            width: width - this.PANEL_SIZE * 4
           });
         }
       } catch (error) {
@@ -131,13 +131,13 @@ export default {
 
     async handleSolve(step) {
       const stepMap = {
-        'lower-cross': { target: 0, message: '底层十字' },
-        'lower-corners': { target: 1, message: '底层角块' },
-        'middle-layer': { target: 2, message: '中层' },
-        'upper-cross': { target: 3, message: '顶层十字' },
+        'lower-cross': { target: 0, message: '底十字' },
+        'lower-corners': { target: 1, message: '底角块' },
+        'middle-layer': { target: 2, message: '中层棱' },
+        'upper-cross': { target: 3, message: '顶十字' },
         'upper-face': { target: 4, message: '顶面' },
-        'upper-edges': { target: 5, message: '顶棱' },
-        'upper-corners': { target: 6, message: '顶角' }
+        'upper-corners': { target: 5, message: '顶角' },
+        'upper-edges': { target: 6, message: '顶棱终' }
       };
 
       const { target, message } = stepMap[step];

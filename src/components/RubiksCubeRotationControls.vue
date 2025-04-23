@@ -31,15 +31,15 @@
 
       <div class="solve-steps" v-show="showSolvePanel">
         <div class="solve-group bottom-layer">
-          <button class="step-btn" @click="solveLowerCross">底层十字</button>
-          <button class="step-btn" @click="solveLowerCorners">底层角块</button>
+          <button class="step-btn" @click="solveLowerCross">底十字</button>
+          <button class="step-btn" @click="solveLowerCorners">底角块</button>
         </div>
-        <button class="step-btn" @click="solveMiddleLayer">中层求解</button>
+        <button class="step-btn" @click="solveMiddleLayer">中层</button>
         <div class="solve-group top-layer">
-          <button class="step-btn" @click="solveUpperCross">十字</button>
+          <button class="step-btn" @click="solveUpperCross">顶十字</button>
           <button class="step-btn" @click="solveUpperFace">顶面</button>
-          <button class="step-btn" @click="solveUpperEdges">顶棱</button>
           <button class="step-btn" @click="solveUpperCorners">顶角</button>
+          <button class="step-btn final-step" @click="solveUpperEdges">顶棱终</button>
         </div>
       </div>
     </div>
@@ -278,6 +278,14 @@ input[type="radio"] {
   background-color: #1976D2;
 }
 
+.step-btn.final-step {
+  background-color: #9C27B0;
+}
+
+.step-btn.final-step:hover {
+  background-color: #7B1FA2;
+}
+
 .shuffle-reset-container {
   display: flex;
   gap: 15px;
@@ -332,9 +340,17 @@ input[type="radio"] {
   padding: 8px;
   border-radius: 4px;
   margin: 8px 0;
+  display: flex;
+  justify-content: space-between;
 }
 
 .solve-group button {
   margin: 4px 1px;
+  flex: 1;
+  max-width: 48%;
+}
+
+.solve-steps > button.step-btn {
+  width: 100%;
 }
 </style>
