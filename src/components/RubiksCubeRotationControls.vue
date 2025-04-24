@@ -27,7 +27,7 @@
       </div>
     </div>
     <div class="solve-control">
-      <button class="solve-btn" @click="toggleSolvePanel">层先法求解</button>
+      <button class="solve-btn" @click="toggleSolvePanel">{{ showSolvePanel ? '关闭求解' : '层先法求解' }}</button>
 
       <div class="solve-steps" v-show="showSolvePanel">
         <div class="solve-group bottom-layer">
@@ -52,6 +52,7 @@
         <input type="checkbox" :checked="showDebugMessages" @change="toggleDebug">
         显示调试消息
       </label>
+      <p class="debug-hint" v-show="!showDebugMessages">查看还原步骤请打开调试消息</p>
     </div>
   </div>
 </template>
@@ -234,6 +235,12 @@ input[type="radio"] {
 
 .debug-label input[type="checkbox"] {
   margin: 0;
+}
+
+.debug-hint {
+  font-size: 9px;
+  color: #666;
+  margin: 0 0 8px 0;
 }
 
 .solve-control {
