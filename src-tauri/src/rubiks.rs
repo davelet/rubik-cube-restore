@@ -72,6 +72,6 @@ mod tests {
         shuffler.shuffle(20);
         // print_cube(&cube);
         let res = execute(&mut cube, SolveTarget::TopEdge);
-        println!("after {:?}", res);
+        assert!(res.1.is_solved());
     }
 }
