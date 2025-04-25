@@ -1,0 +1,8 @@
+[package]
+edition = "2021"
+name = "rubik-cube-solver"
+version = "0.1.0"
+
+[dependencies]
+rubik-cube-core = {path = "../rubik-cube-core"}
+rubik-cube-shuffler = {path = "../rubik-cube-shuffler"}

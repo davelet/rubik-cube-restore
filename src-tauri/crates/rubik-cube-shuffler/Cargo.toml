@@ -1,0 +1,8 @@
+[package]
+edition = "2024"
+name = "rubik-cube-shuffler"
+version = "1.0.0"
+
+[dependencies]
+rand = "0.8"
+rubik-cube-core = {path = "../rubik-cube-core"}

@@ -1,0 +1,7 @@
+[package]
+edition = "2021"
+name = "rubik-cube-core"
+version = "1.0.0"
+
+[dependencies]
+rand = "0.8"
